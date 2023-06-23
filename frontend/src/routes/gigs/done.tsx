@@ -10,7 +10,7 @@ export default function Done() {
       <span className="mb-2 font-semibold">Suorittamani keikat</span>
       {gigsDone.length === 0 && <span>Et ole suorittanut keikkoja.</span>}
       {gigsDone.map((gig) => (
-        <GigDone key={gig.id} className="mb-2" gig={gig} />
+        <GigDone key={gig.id} className="mb-2 w-full" gig={gig} />
       ))}
     </div>
   );
