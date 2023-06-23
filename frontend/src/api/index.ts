@@ -1,7 +1,6 @@
 import { components } from '../../schema';
 import { Result } from './result';
 
-export type LoginResponseDto = components['schemas']['LoginResponseDto'];
 export type DoneGigDto = components['schemas']['DoneGigDto'];
 export type UpcomingGigDto = components['schemas']['UpcomingGigDto'];
 export type GigDto = components['schemas']['GigDto'];
@@ -57,10 +56,7 @@ export default function createApi() {
   }
 
   return {
-    login: (
-      username: string,
-      password: string
-    ): Promise<Result<LoginResponseDto>> =>
+    login: (username: string, password: string): Promise<Result> =>
       requestApi('POST', '/api/login', { username, password }),
     logout: (): Promise<Result> => requestApi('POST', '/api/logout'),
 

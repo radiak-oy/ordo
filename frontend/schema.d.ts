@@ -5,6 +5,110 @@
 
 
 export interface paths {
+  "/admin/users": {
+    get: {
+      responses: {
+        /** @description Success */
+        200: never;
+      };
+    };
+    post: {
+      parameters: {
+        query?: {
+          role?: string;
+          username?: string;
+          password?: string;
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: never;
+      };
+    };
+  };
+  "/admin/users/{userId}": {
+    get: {
+      parameters: {
+        path: {
+          userId: string;
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: never;
+      };
+    };
+    delete: {
+      parameters: {
+        path: {
+          userId: string;
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: never;
+      };
+    };
+  };
+  "/admin/users/{userId}/password": {
+    put: {
+      parameters: {
+        query?: {
+          password?: string;
+        };
+        path: {
+          userId: string;
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: never;
+      };
+    };
+  };
+  "/admin/users/{userId}/claims": {
+    get: {
+      parameters: {
+        path: {
+          userId: string;
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: never;
+      };
+    };
+    post: {
+      parameters: {
+        query?: {
+          claimType?: string;
+          claimValue?: string;
+        };
+        path: {
+          userId: string;
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: never;
+      };
+    };
+    delete: {
+      parameters: {
+        query?: {
+          claimType?: string;
+          claimValue?: string;
+        };
+        path: {
+          userId: string;
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: never;
+      };
+    };
+  };
   "/gigs/done": {
     get: {
       responses: {
@@ -157,13 +261,7 @@ export interface paths {
       };
       responses: {
         /** @description Success */
-        200: {
-          content: {
-            "text/plain": components["schemas"]["LoginResponseDto"];
-            "application/json": components["schemas"]["LoginResponseDto"];
-            "text/json": components["schemas"]["LoginResponseDto"];
-          };
-        };
+        200: never;
       };
     };
   };
@@ -307,9 +405,6 @@ export interface components {
     LoginDto: {
       userName: string;
       password: string;
-    };
-    LoginResponseDto: {
-      isAdmin: boolean;
     };
     PostGigDto: {
       /** Format: uuid */

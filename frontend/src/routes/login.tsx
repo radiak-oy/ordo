@@ -22,7 +22,7 @@ export default function Login() {
       return;
     }
 
-    navigate(result.value.isAdmin ? '/manage/gigs' : '/gigs/upcoming');
+    navigate('/');
   }
 
   return (

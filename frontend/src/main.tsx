@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import React, { PropsWithChildren, useState } from 'react';
+import React, { PropsWithChildren, useContext, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import {
   createBrowserRouter,
@@ -21,28 +21,34 @@ import StaffEdit from './routes/manage/staff/edit';
 import GigsUpcoming from './routes/gigs/upcoming';
 import GigsDone from './routes/gigs/done';
 import createApi, { GigDto, ProfileDto, QualificationDto } from './api';
+import Index from './routes';
 
 function ProtectedRoute({ children }: PropsWithChildren) {
   const [username, setUsername] = useState(
     /username=(\w*);?/.exec(document.cookie)?.[1] ?? null
   );
 
+  const [role, setRole] = useState<'manager' | 'worker' | null>(
+    (/role=(\w*);?/.exec(document.cookie)?.[1] as 'manager' | 'worker') ?? null
+  );
+
   const { logout: logoutApi } = createApi();
 
-  if (username == null) {
+  if (username == null || role == null) {
     return <Navigate to="/login" replace />;
   }
 
   async function logout() {
     await logoutApi();
     setUsername(null);
+    setRole(null);
 
-    document.cookie = 'username=;expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    document.cookie = 'username=;role=;expires=Thu, 01 Jan 1970 00:00:00 GMT';
     window.location.reload();
   }
 
   return (
-    <AuthContext.Provider value={{ username, logout }}>
+    <AuthContext.Provider value={{ username, role, logout }}>
       {children}
     </AuthContext.Provider>
   );
@@ -67,8 +73,13 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
         children: [
           {
+            index: true,
+            element: <Index />,
+          },
+          {
             path: 'gigs',
             children: [
+              { index: true, element: <Navigate to="upcoming" replace /> },
               {
                 path: 'upcoming',
                 element: <GigsUpcoming />,
@@ -105,6 +116,7 @@ const router = createBrowserRouter([
       {
         errorElement: <ErrorPage />,
         children: [
+          { index: true, element: <Navigate to="gigs" replace /> },
           {
             path: 'gigs',
             children: [

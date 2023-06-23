@@ -28,7 +28,7 @@ public class HomeController : ControllerBase
 
     [AllowAnonymous]
     [HttpPost("login")]
-    public async Task<ActionResult<LoginResponseDto>> LoginAsync(LoginDto dto)
+    public async Task<ActionResult> LoginAsync(LoginDto dto)
     {
         var result = await _signInManager.PasswordSignInAsync(dto.UserName, dto.Password, isPersistent: true, lockoutOnFailure: false); // TODO: lockout
 
@@ -43,10 +43,16 @@ public class HomeController : ControllerBase
                 SameSite = SameSiteMode.Lax,
             });
 
-            return Ok(new LoginResponseDto
+            var role = await _userManager.IsInRoleAsync(user, RoleNames.Manager) ? "manager" : "worker";
+
+            Response.Cookies.Append("role", role, new CookieOptions
             {
-                IsAdmin = await _userManager.IsInRoleAsync(user, RoleNames.Manager)
+                Expires = DateTimeOffset.Now.AddDays(365),
+                IsEssential = true,
+                SameSite = SameSiteMode.Lax,
             });
+
+            return NoContent();
         }
 
         if (result.IsLockedOut)
@@ -71,6 +77,7 @@ public class HomeController : ControllerBase
     {
         await _signInManager.SignOutAsync();
         Response.Cookies.Delete("username");
+        Response.Cookies.Delete("role");
 
         return NoContent();
     }
