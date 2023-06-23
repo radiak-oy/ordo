@@ -5,7 +5,7 @@ interface SelectorProps {
   title: string;
   addTitle: string;
   noneTitle: string;
-  max: number;
+  max?: number;
   selectedIds: string[];
   options: {
     id: string;
