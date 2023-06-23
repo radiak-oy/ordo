@@ -64,12 +64,17 @@ public class HomeController : ControllerBase
     }
 
     [HttpGet("whoami")]
-    public ActionResult<string> WhoAmI()
+    public async Task<ActionResult<UserDto>> WhoAmI()
     {
-        var userId = User?.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException();
-        var username = User?.Identity?.Name ?? "";
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException();
 
-        return Ok($"{username}\r\n{userId}");
+        var user = await _userManager.FindByIdAsync(userId);
+
+        if (user == null) return NotFound();
+
+        var roles = await _userManager.GetRolesAsync(user);
+
+        return Ok(UserDto.FromModel(user, roles.ToArray()));
     }
 
     [HttpPost("logout")]
