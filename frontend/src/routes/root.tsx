@@ -2,17 +2,19 @@ import { useContext } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import { AuthContext } from '../context/auth-context';
 import { MdLogout } from 'react-icons/md';
+import Logo from '../components/Logo';
 
 export default function Root() {
   const { username, logout } = useContext(AuthContext);
 
   return (
-    <div className="min-h-screen border-t-4 border-primary-500">
+    <div className="min-h-screen">
       <div className="mx-auto px-4 py-2 max-w-xl flex justify-between items-center">
-        <div className="flex">
+        <div className="flex items-center">
+          <Logo />
           <NavLink
             to="gigs/upcoming"
-            className={({ isActive }) => `mr-8  ${isActive ? 'font-bold' : ''}`}
+            className={({ isActive }) => `mx-8 ${isActive ? 'font-bold' : ''}`}
           >
             Tulevat keikat
           </NavLink>
