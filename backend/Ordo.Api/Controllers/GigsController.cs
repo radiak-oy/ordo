@@ -179,6 +179,11 @@ public class GigsController : ControllerBase
             return NotFound("Qualification not found.");
         }
 
+        if (dto.End <= dto.Start)
+        {
+            return BadRequest("End must be after Start.");
+        }
+
         var gig = new Gig()
         {
             Qualification = qualification,
@@ -205,8 +210,14 @@ public class GigsController : ControllerBase
             return NotFound();
         }
 
-        if (dto.End <= dto.Start) return BadRequest("The end datetime should be after start.");
-        if (dto.WorkerIds.Length > dto.MaxWorkers) return BadRequest("Max workers must be greater or equal to the amount of workers.");
+        if (dto.End <= dto.Start)
+        {
+            return BadRequest("End must be after Start.");
+        }
+        if (dto.WorkerIds.Length > dto.MaxWorkers)
+        {
+            return BadRequest("Max workers must be greater or equal to the amount of workers.");
+        }
 
         // TODO: check qualifications etc.
 
