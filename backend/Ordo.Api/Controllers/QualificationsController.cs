@@ -21,7 +21,9 @@ public class QualificationsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<QualificationDto>>> GetAll()
     {
-        var qualifications = await _db.Qualifications.ToListAsync();
+        var qualifications = await _db.Qualifications
+            .OrderBy(q => q.Name)
+            .ToListAsync();
 
         return Ok(qualifications.Select(QualificationDto.FromModel));
     }
