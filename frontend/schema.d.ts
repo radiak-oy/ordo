@@ -5,6 +5,60 @@
 
 
 export interface paths {
+  "/gigs/done": {
+    get: {
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "text/plain": (components["schemas"]["DoneGigDto"])[];
+            "application/json": (components["schemas"]["DoneGigDto"])[];
+            "text/json": (components["schemas"]["DoneGigDto"])[];
+          };
+        };
+      };
+    };
+  };
+  "/gigs/upcoming": {
+    get: {
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "text/plain": (components["schemas"]["UpcomingGigDto"])[];
+            "application/json": (components["schemas"]["UpcomingGigDto"])[];
+            "text/json": (components["schemas"]["UpcomingGigDto"])[];
+          };
+        };
+      };
+    };
+  };
+  "/gigs/{id}/signup": {
+    post: {
+      parameters: {
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: never;
+      };
+    };
+  };
+  "/gigs/{id}/signup-cancel": {
+    post: {
+      parameters: {
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: never;
+      };
+    };
+  };
   "/gigs": {
     get: {
       responses: {
@@ -21,9 +75,9 @@ export interface paths {
     post: {
       requestBody?: {
         content: {
-          "application/json": components["schemas"]["CreateGigDto"];
-          "text/json": components["schemas"]["CreateGigDto"];
-          "application/*+json": components["schemas"]["CreateGigDto"];
+          "application/json": components["schemas"]["PostGigDto"];
+          "text/json": components["schemas"]["PostGigDto"];
+          "application/*+json": components["schemas"]["PostGigDto"];
         };
       };
       responses: {
@@ -49,8 +103,8 @@ export interface paths {
       };
     };
   };
-  "/gigs/{id}/signup": {
-    post: {
+  "/gigs/{id}": {
+    get: {
       parameters: {
         path: {
           id: string;
@@ -58,7 +112,58 @@ export interface paths {
       };
       responses: {
         /** @description Success */
-        200: never;
+        200: {
+          content: {
+            "text/plain": components["schemas"]["GigDto"];
+            "application/json": components["schemas"]["GigDto"];
+            "text/json": components["schemas"]["GigDto"];
+          };
+        };
+      };
+    };
+    put: {
+      parameters: {
+        path: {
+          id: string;
+        };
+      };
+      requestBody?: {
+        content: {
+          "application/json": components["schemas"]["EditGigDto"];
+          "text/json": components["schemas"]["EditGigDto"];
+          "application/*+json": components["schemas"]["EditGigDto"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "text/plain": components["schemas"]["GigDto"];
+            "application/json": components["schemas"]["GigDto"];
+            "text/json": components["schemas"]["GigDto"];
+          };
+        };
+      };
+    };
+  };
+  "/login": {
+    post: {
+      requestBody?: {
+        content: {
+          "application/json": components["schemas"]["LoginDto"];
+          "text/json": components["schemas"]["LoginDto"];
+          "application/*+json": components["schemas"]["LoginDto"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "text/plain": components["schemas"]["LoginResponseDto"];
+            "application/json": components["schemas"]["LoginResponseDto"];
+            "text/json": components["schemas"]["LoginResponseDto"];
+          };
+        };
       };
     };
   };
@@ -84,25 +189,94 @@ export interface paths {
       };
     };
   };
+  "/profiles": {
+    get: {
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "text/plain": (components["schemas"]["ProfileDto"])[];
+            "application/json": (components["schemas"]["ProfileDto"])[];
+            "text/json": (components["schemas"]["ProfileDto"])[];
+          };
+        };
+      };
+    };
+  };
+  "/profiles/{workerId}": {
+    get: {
+      parameters: {
+        path: {
+          workerId: string;
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "text/plain": (components["schemas"]["ProfileDto"])[];
+            "application/json": (components["schemas"]["ProfileDto"])[];
+            "text/json": (components["schemas"]["ProfileDto"])[];
+          };
+        };
+      };
+    };
+    put: {
+      parameters: {
+        path: {
+          workerId: string;
+        };
+      };
+      requestBody?: {
+        content: {
+          "application/json": components["schemas"]["EditProfileDto"];
+          "text/json": components["schemas"]["EditProfileDto"];
+          "application/*+json": components["schemas"]["EditProfileDto"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "text/plain": components["schemas"]["ProfileDto"];
+            "application/json": components["schemas"]["ProfileDto"];
+            "text/json": components["schemas"]["ProfileDto"];
+          };
+        };
+      };
+    };
+  };
+  "/qualifications": {
+    get: {
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "text/plain": (components["schemas"]["QualificationDto"])[];
+            "application/json": (components["schemas"]["QualificationDto"])[];
+            "text/json": (components["schemas"]["QualificationDto"])[];
+          };
+        };
+      };
+    };
+  };
 }
 
 export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
-    CreateGigDto: {
-      type: string;
+    DoneGigDto: {
+      /** Format: uuid */
+      id: string;
+      qualification: string;
       /** Format: date-time */
       start: string;
       /** Format: date-time */
       end: string;
       address: string;
-      /** Format: int32 */
-      maxWorkers: number;
     };
-    GigDto: {
-      /** Format: uuid */
-      id: string;
+    EditGigDto: {
       /** Format: date-time */
       start: string;
       /** Format: date-time */
@@ -111,6 +285,63 @@ export interface components {
       /** Format: int32 */
       maxWorkers: number;
       workerIds: (string)[];
+    };
+    EditProfileDto: {
+      name: string;
+      qualificationIds: (string)[];
+      notes: string;
+    };
+    GigDto: {
+      /** Format: uuid */
+      id: string;
+      qualification: components["schemas"]["QualificationDto"];
+      /** Format: date-time */
+      start: string;
+      /** Format: date-time */
+      end: string;
+      address: string;
+      /** Format: int32 */
+      maxWorkers: number;
+      workerIds: (string)[];
+    };
+    LoginDto: {
+      userName: string;
+      password: string;
+    };
+    LoginResponseDto: {
+      isAdmin: boolean;
+    };
+    PostGigDto: {
+      /** Format: uuid */
+      qualificationId: string;
+      /** Format: date-time */
+      start: string;
+      /** Format: date-time */
+      end: string;
+      address: string;
+      /** Format: int32 */
+      maxWorkers: number;
+    };
+    ProfileDto: {
+      workerId: string;
+      name: string;
+      qualifications: (components["schemas"]["QualificationDto"])[];
+      notes: string;
+    };
+    QualificationDto: {
+      id: string;
+      name: string;
+    };
+    UpcomingGigDto: {
+      /** Format: uuid */
+      id: string;
+      qualification: string;
+      /** Format: date-time */
+      start: string;
+      /** Format: date-time */
+      end: string;
+      address: string;
+      isSignedUp: boolean;
     };
   };
   responses: never;

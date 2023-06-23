@@ -234,12 +234,11 @@ namespace Ordo.Api.Migrations
                     b.Property<int>("MaxWorkers")
                         .HasColumnType("integer");
 
+                    b.Property<Guid>("QualificationId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTimeOffset>("Start")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<List<string>>("WorkerIds")
                         .IsRequired()
@@ -247,7 +246,57 @@ namespace Ordo.Api.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("QualificationId");
+
                     b.ToTable("Gigs");
+                });
+
+            modelBuilder.Entity("Ordo.Api.Models.Profile", b =>
+                {
+                    b.Property<string>("WorkerId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("WorkerId");
+
+                    b.ToTable("Profiles");
+                });
+
+            modelBuilder.Entity("Ordo.Api.Models.Qualification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Qualifications");
+                });
+
+            modelBuilder.Entity("ProfileQualification", b =>
+                {
+                    b.Property<string>("ProfilesWorkerId")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("QualificationsId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("ProfilesWorkerId", "QualificationsId");
+
+                    b.HasIndex("QualificationsId");
+
+                    b.ToTable("ProfileQualification");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -297,6 +346,32 @@ namespace Ordo.Api.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Ordo.Api.Models.Gig", b =>
+                {
+                    b.HasOne("Ordo.Api.Models.Qualification", "Qualification")
+                        .WithMany()
+                        .HasForeignKey("QualificationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Qualification");
+                });
+
+            modelBuilder.Entity("ProfileQualification", b =>
+                {
+                    b.HasOne("Ordo.Api.Models.Profile", null)
+                        .WithMany()
+                        .HasForeignKey("ProfilesWorkerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Ordo.Api.Models.Qualification", null)
+                        .WithMany()
+                        .HasForeignKey("QualificationsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

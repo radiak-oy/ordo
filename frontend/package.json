@@ -11,11 +11,14 @@
     "preview": "vite preview --host"
   },
   "dependencies": {
+    "@react-oauth/google": "^0.11.0",
+    "date-fns": "^2.30.0",
     "localforage": "^1.10.0",
     "match-sorter": "^6.3.1",
     "openapi-typescript": "^6.2.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-icons": "^4.9.0",
     "react-router-dom": "^6.13.0",
     "sort-by": "^1.2.0"
   },
@@ -27,6 +30,12 @@
     "@vitejs/plugin-react": "^4.0.0",
     "autoprefixer": "^10.4.14",
     "eslint": "^8.38.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-config-react": "^1.1.7",
+    "eslint-config-react-hooks": "^1.0.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.3.4",
     "postcss": "^8.4.24",

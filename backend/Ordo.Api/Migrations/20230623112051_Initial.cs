@@ -53,20 +53,28 @@ namespace Ordo.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Gigs",
+                name: "Profiles",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Type = table.Column<string>(type: "text", nullable: false),
-                    Start = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    End = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    Address = table.Column<string>(type: "text", nullable: false),
-                    MaxWorkers = table.Column<int>(type: "integer", nullable: false),
-                    WorkerIds = table.Column<List<string>>(type: "text[]", nullable: false)
+                    WorkerId = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Notes = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Gigs", x => x.Id);
+                    table.PrimaryKey("PK_Profiles", x => x.WorkerId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Qualifications",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Qualifications", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -175,6 +183,53 @@ namespace Ordo.Api.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Gigs",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    QualificationId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Start = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    End = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    Address = table.Column<string>(type: "text", nullable: false),
+                    MaxWorkers = table.Column<int>(type: "integer", nullable: false),
+                    WorkerIds = table.Column<List<string>>(type: "text[]", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Gigs", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Gigs_Qualifications_QualificationId",
+                        column: x => x.QualificationId,
+                        principalTable: "Qualifications",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProfileQualification",
+                columns: table => new
+                {
+                    ProfilesWorkerId = table.Column<string>(type: "text", nullable: false),
+                    QualificationsId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProfileQualification", x => new { x.ProfilesWorkerId, x.QualificationsId });
+                    table.ForeignKey(
+                        name: "FK_ProfileQualification_Profiles_ProfilesWorkerId",
+                        column: x => x.ProfilesWorkerId,
+                        principalTable: "Profiles",
+                        principalColumn: "WorkerId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProfileQualification_Qualifications_QualificationsId",
+                        column: x => x.QualificationsId,
+                        principalTable: "Qualifications",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -211,6 +266,16 @@ namespace Ordo.Api.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Gigs_QualificationId",
+                table: "Gigs",
+                column: "QualificationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProfileQualification_QualificationsId",
+                table: "ProfileQualification",
+                column: "QualificationsId");
         }
 
         /// <inheritdoc />
@@ -235,10 +300,19 @@ namespace Ordo.Api.Migrations
                 name: "Gigs");
 
             migrationBuilder.DropTable(
+                name: "ProfileQualification");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Profiles");
+
+            migrationBuilder.DropTable(
+                name: "Qualifications");
         }
     }
 }

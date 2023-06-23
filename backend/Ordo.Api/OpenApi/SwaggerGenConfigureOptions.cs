@@ -17,6 +17,8 @@ public class SwaggerGenConfigureOptions : IConfigureOptions<SwaggerGenOptions>
             Name = "X-ADMIN-KEY",
         });
 
+        options.OperationFilter<AdminTokenOperationFilter>();
+
         options.SchemaFilter<RequireNonNullablePropertiesSchemaFilter>();
     }
 }

@@ -1,3 +1,31 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+html, body {
+  font-family: "Noto Sans", system-ui, sans-serif;
+}
+
+input {
+  @apply px-2 border rounded;
+}
+
+textarea {
+  @apply px-2 border rounded;
+}
+
+.btn-primary {
+  @apply p-2 flex justify-center items-center rounded border font-bold text-white bg-primary-500 hover:bg-primary-600 transition;
+}
+
+.btn-primary-outline {
+  @apply p-2 flex justify-center items-center rounded border text-primary-500 border-primary-500 hover:text-white hover:bg-primary-500 transition;
+}
+
+.btn-secondary {
+  @apply p-2 flex justify-center items-center rounded border border-secondary-500 hover:text-white hover:bg-secondary-500 transition;
+}
+
+.btn-danger {
+  @apply p-2 flex justify-center items-center rounded text-red-500 border border-red-500 hover:text-white hover:bg-red-500 transition;
+}
