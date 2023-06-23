@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import React, { PropsWithChildren, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import {
   createBrowserRouter,
@@ -54,11 +54,32 @@ function ProtectedRoute({ children }: PropsWithChildren) {
   );
 }
 
+function Title({
+  children,
+  title,
+}: React.PropsWithChildren<{ title: string }>) {
+  useEffect(() => {
+    const oldTitle = document.title;
+
+    document.title = `${title} – Ordo`;
+
+    return () => {
+      document.title = oldTitle;
+    };
+  }, [title]);
+
+  return <>{children}</>;
+}
+
 const router = createBrowserRouter([
   {
     path: '/login',
     errorElement: <ErrorPage />,
-    element: <Login />,
+    element: (
+      <Title title="Kirjaudu sisään">
+        <Login />
+      </Title>
+    ),
   },
   {
     path: '/',
@@ -82,7 +103,11 @@ const router = createBrowserRouter([
               { index: true, element: <Navigate to="upcoming" replace /> },
               {
                 path: 'upcoming',
-                element: <GigsUpcoming />,
+                element: (
+                  <Title title="Tulevat keikat">
+                    <GigsUpcoming />
+                  </Title>
+                ),
                 loader: async ({ request }) => {
                   return fetch('/api/gigs/upcoming', {
                     signal: request.signal,
@@ -91,7 +116,11 @@ const router = createBrowserRouter([
               },
               {
                 path: 'done',
-                element: <GigsDone />,
+                element: (
+                  <Title title="Historia">
+                    <GigsDone />
+                  </Title>
+                ),
                 loader: async ({ request }) => {
                   return fetch('/api/gigs/done', {
                     signal: request.signal,
@@ -122,7 +151,11 @@ const router = createBrowserRouter([
             children: [
               {
                 index: true,
-                element: <ManageGigs />,
+                element: (
+                  <Title title="Keikat">
+                    <ManageGigs />
+                  </Title>
+                ),
                 loader: async ({ request }) => {
                   return fetch('/api/gigs', {
                     signal: request.signal,
@@ -131,7 +164,11 @@ const router = createBrowserRouter([
               },
               {
                 path: 'post',
-                element: <GigsPost />,
+                element: (
+                  <Title title="Julkaise keikka">
+                    <GigsPost />
+                  </Title>
+                ),
                 loader: async ({ request }) => {
                   return fetch('/api/qualifications', {
                     signal: request.signal,
@@ -140,7 +177,11 @@ const router = createBrowserRouter([
               },
               {
                 path: ':id',
-                element: <GigsEdit />,
+                element: (
+                  <Title title="Muokkaa keikkaa">
+                    <GigsEdit />
+                  </Title>
+                ),
                 loader: async ({ request, params }) => {
                   const gig = (await (
                     await fetch(`/api/gigs/${params.id!}`, {
@@ -170,14 +211,22 @@ const router = createBrowserRouter([
             children: [
               {
                 index: true,
-                element: <Staff />,
+                element: (
+                  <Title title="Henkilöstö">
+                    <Staff />
+                  </Title>
+                ),
                 loader: async ({ request }) => {
                   return fetch('/api/profiles', { signal: request.signal });
                 },
               },
               {
                 path: ':id',
-                element: <StaffEdit />,
+                element: (
+                  <Title title="Muokkaa henkilöä">
+                    <StaffEdit />
+                  </Title>
+                ),
                 loader: async ({ request, params }) => {
                   const qualifications = (await (
                     await fetch('/api/qualifications', {
