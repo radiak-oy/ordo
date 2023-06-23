@@ -21,7 +21,10 @@ public class DbSeeder : IHostedService
 
         bool isDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
 
-        await db.Database.MigrateAsync();
+        if (isDevelopment)
+        {
+            await db.Database.MigrateAsync();
+        }
 
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
         var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
