@@ -69,7 +69,7 @@ public class GigsController : ControllerBase
         var gigsUpcoming = await _db.Gigs
             .Include(g => g.Qualification)
             .OrderBy(g => g.Start)
-            .Where(g => g.Start >= DateTimeOffset.UtcNow)
+            .Where(g => DateTimeOffset.UtcNow <= g.End)
             .Where(g => profile.Qualifications.Contains(g.Qualification))
             .ToListAsync();
 
