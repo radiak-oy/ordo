@@ -222,7 +222,7 @@ public class GigsController : ControllerBase
     }
 
     [Authorize(Roles = RoleNames.Manager)]
-    [HttpDelete]
+    [HttpDelete("{id}")]
     public async Task<ActionResult> Delete(Guid id)
     {
         var gig = await _db.Gigs.FindAsync(id);
