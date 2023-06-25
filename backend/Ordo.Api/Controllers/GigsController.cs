@@ -27,6 +27,7 @@ public class GigsController : ControllerBase
     public async Task<ActionResult<IEnumerable<DoneGigDto>>> GetAllDone()
     {
         var profile = await _db.Profiles
+            .AsNoTracking()
             .Include(p => p.Qualifications)
             .SingleOrDefaultAsync(p => p.WorkerId == UserId);
 
@@ -36,6 +37,7 @@ public class GigsController : ControllerBase
         }
 
         var gigsDone = await _db.Gigs
+            .AsNoTracking()
             .Include(g => g.Qualification)
             .OrderBy(g => g.Start)
             .Where(g => g.WorkerIds.Contains(profile.WorkerId))
@@ -58,6 +60,7 @@ public class GigsController : ControllerBase
     public async Task<ActionResult<IEnumerable<UpcomingGigDto>>> GetAllUpcoming()
     {
         var profile = await _db.Profiles
+            .AsNoTracking()
             .Include(p => p.Qualifications)
             .SingleOrDefaultAsync(p => p.WorkerId == UserId);
 
@@ -67,6 +70,7 @@ public class GigsController : ControllerBase
         }
 
         var gigsUpcoming = await _db.Gigs
+            .AsNoTracking()
             .Include(g => g.Qualification)
             .OrderBy(g => g.Start)
             .Where(g => DateTimeOffset.UtcNow <= g.End)
@@ -89,13 +93,20 @@ public class GigsController : ControllerBase
     [HttpPost("{id}/signup")]
     public async Task<ActionResult> SignUp(Guid id)
     {
-        var gig = await _db.Gigs.Include(g => g.Qualification).SingleOrDefaultAsync(g => g.Id == id);
+        var gig = await _db.Gigs
+            .Include(g => g.Qualification)
+            .SingleOrDefaultAsync(g => g.Id == id);
+
         if (gig == null)
         {
             return NotFound();
         }
 
-        var profile = await _db.Profiles.AsNoTracking().Include(p => p.Qualifications).SingleOrDefaultAsync(p => p.WorkerId == UserId);
+        var profile = await _db.Profiles
+            .AsNoTracking()
+            .Include(p => p.Qualifications)
+            .SingleOrDefaultAsync(p => p.WorkerId == UserId);
+
         if (profile == null)
         {
             return NotFound("Profile not found.");
@@ -126,13 +137,20 @@ public class GigsController : ControllerBase
     [HttpPost("{id}/signup-cancel")]
     public async Task<ActionResult> CancelSignUp(Guid id)
     {
-        var gig = await _db.Gigs.Include(g => g.Qualification).SingleOrDefaultAsync(g => g.Id == id);
+        var gig = await _db.Gigs
+            .Include(g => g.Qualification)
+            .SingleOrDefaultAsync(g => g.Id == id);
+
         if (gig == null)
         {
             return NotFound();
         }
 
-        var profile = await _db.Profiles.AsNoTracking().Include(p => p.Qualifications).SingleOrDefaultAsync(p => p.WorkerId == UserId);
+        var profile = await _db.Profiles
+            .AsNoTracking()
+            .Include(p => p.Qualifications)
+            .SingleOrDefaultAsync(p => p.WorkerId == UserId);
+
         if (profile == null)
         {
             return NotFound("Profile not found.");
@@ -154,7 +172,12 @@ public class GigsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<GigDto>>> GetAll()
     {
-        var gigs = await _db.Gigs.AsNoTracking().Include(g => g.Qualification).OrderBy(g => g.Start).ToListAsync();
+        var gigs = await _db.Gigs
+            .AsNoTracking()
+            .Include(g => g.Qualification)
+            .OrderBy(g => g.Start)
+            .ToListAsync();
+
         return Ok(gigs.Select(GigDto.FromModel));
     }
 
@@ -162,7 +185,10 @@ public class GigsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<GigDto>> Get(Guid id)
     {
-        var gig = await _db.Gigs.AsNoTracking().Include(g => g.Qualification).SingleOrDefaultAsync(g => g.Id == id);
+        var gig = await _db.Gigs
+            .AsNoTracking()
+            .Include(g => g.Qualification)
+            .SingleOrDefaultAsync(g => g.Id == id);
 
         if (gig == null) return NotFound();
 
@@ -204,7 +230,10 @@ public class GigsController : ControllerBase
     [HttpPut("{id}")]
     public async Task<ActionResult<GigDto>> Edit(Guid id, [FromBody] EditGigDto dto)
     {
-        var gig = await _db.Gigs.Include(g => g.Qualification).SingleOrDefaultAsync(g => g.Id == id);
+        var gig = await _db.Gigs
+            .Include(g => g.Qualification)
+            .SingleOrDefaultAsync(g => g.Id == id);
+
         if (gig == null)
         {
             return NotFound();
