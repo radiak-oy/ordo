@@ -9,6 +9,9 @@ module.exports = {
         primary: colors.blue,
         secondary: colors.gray,
       },
+      screens: {
+        xs: '425px',
+      },
     },
   },
   plugins: [],

@@ -26,7 +26,7 @@ export default function Root() {
           </NavLink>
         </div>
         <div className="flex items-center">
-          <span className="mr-2 font-medium">{username}</span>
+          <span className="mr-2 hidden xs:inline font-medium">{username}</span>
 
           <button
             type="button"
