@@ -129,23 +129,21 @@ export default function GigUpsertForm({
           className="mb-2"
           value={format(startDateTime, "yyyy-MM-dd'T'HH:mm")}
           onChange={(e) => setStartDateTime(new Date(e.target.value))}
-          min={new Date().toISOString().slice(0, -8)}
+          min={isPostMode ? new Date().toISOString().slice(0, -8) : undefined}
         />
 
-        {startDateTime && (
-          <>
-            <label htmlFor="input-end">Päättyy</label>
-            <input
-              id="input-end"
-              type="datetime-local"
-              required
-              className="mb-2"
-              value={format(endDateTime, "yyyy-MM-dd'T'HH:mm")}
-              onChange={(e) => setEndDateTime(new Date(e.target.value))}
-              min={format(startDateTime, "yyyy-MM-dd'T'HH:mm")}
-            />
-          </>
-        )}
+        <label htmlFor="input-end">Päättyy</label>
+        <input
+          id="input-end"
+          type="datetime-local"
+          required
+          className="mb-2"
+          value={format(endDateTime, "yyyy-MM-dd'T'HH:mm")}
+          onChange={(e) => setEndDateTime(new Date(e.target.value))}
+          min={
+            isPostMode ? format(startDateTime, "yyyy-MM-dd'T'HH:mm") : undefined
+          }
+        />
 
         <label htmlFor="input-address">Osoite</label>
         <input
