@@ -50,7 +50,7 @@ export default function Index() {
             <ManagerGig
               key={gig.id}
               className="mb-2"
-              ongoing
+              type="ongoing"
               gig={gig}
               onClick={() => navigate(gig.id)}
             />
@@ -71,6 +71,7 @@ export default function Index() {
             <ManagerGig
               key={gig.id}
               className="mb-2"
+              type="upcoming"
               gig={gig}
               onClick={() => navigate(gig.id)}
             />

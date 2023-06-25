@@ -4,19 +4,20 @@ import { GigDto } from '../../api';
 interface ManagerGigProps {
   className: string;
   gig: GigDto;
-  ongoing?: boolean;
+  type: 'upcoming' | 'ongoing' | 'past';
   onClick: () => void;
 }
 
 export default function ManagerGig({
   className,
   gig,
-  ongoing,
+  type,
   onClick,
 }: ManagerGigProps) {
   const isFull = gig.workerIds.length === gig.maxWorkers;
   const isTomorrow =
-    differenceInCalendarDays(new Date(gig.start), new Date()) <= 1 && !ongoing;
+    differenceInCalendarDays(new Date(gig.start), new Date()) <= 1 &&
+    type === 'upcoming';
 
   return (
     <div
@@ -35,7 +36,7 @@ export default function ManagerGig({
           }
         >
           {gig.workerIds.length}/{gig.maxWorkers}{' '}
-          {ongoing ? 'tekijää' : 'ilmoittautunut'}
+          {type === 'upcoming' ? 'ilmoittautunut' : 'tekijää'}
         </span>
       </div>
       <span>{new Date(gig.start).toLocaleDateString()}</span>
