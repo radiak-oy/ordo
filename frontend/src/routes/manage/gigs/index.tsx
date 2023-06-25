@@ -1,6 +1,6 @@
 import { useLoaderData, useNavigate } from 'react-router-dom';
-import { MdAdd } from 'react-icons/md';
-import { useMemo } from 'react';
+import { MdAdd, MdKeyboardArrowDown } from 'react-icons/md';
+import { useMemo, useState } from 'react';
 import ManagerGig from '../../../components/manage/ManagerGig';
 import { differenceInCalendarDays, isSameDay } from 'date-fns';
 import { GigDto } from '../../../api';
@@ -10,7 +10,14 @@ export default function Index() {
 
   const gigs = useLoaderData() as GigDto[];
 
+  const [showPastGigs, setShowPastGigs] = useState(false);
+
   const now = new Date();
+
+  const gigsPast = useMemo(
+    () => gigs.filter((g) => new Date(g.end) < now),
+    [now, gigs]
+  );
 
   const gigsOngoing = useMemo(
     () =>
@@ -42,7 +49,33 @@ export default function Index() {
         <MdAdd className="mr-1" />
         Julkaise keikka
       </button>
+
       {gigs.length === 0 && <span className="mb-2">Ei keikkoja.</span>}
+      {gigsPast.length > 0 && (
+        <div className="mb-2 w-full flex flex-col">
+          <button
+            className="flex justify-between items-center rounded hover:bg-secondary-100"
+            onClick={() => setShowPastGigs((old) => !old)}
+          >
+            <span className="mb-1 font-semibold">Menneet</span>
+            <MdKeyboardArrowDown
+              className={`mr-1 ${showPastGigs ? 'rotate-180' : 'rotate-0'}`}
+            />
+          </button>
+          <div className={showPastGigs ? '' : 'hidden'}>
+            {gigsPast.map((gig) => (
+              <ManagerGig
+                key={gig.id}
+                className="mb-2"
+                type="past"
+                gig={gig}
+                onClick={() => navigate(gig.id)}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
       {gigsOngoing.length > 0 && (
         <div className="mb-2 w-full flex flex-col">
           <span className="mb-1 font-semibold">Meneillään</span>
