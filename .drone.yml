@@ -17,7 +17,5 @@ steps:
       - npm run build
 
 trigger:
-  branch:
-    - main
   event:
     - push
