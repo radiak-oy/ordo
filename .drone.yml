@@ -1,0 +1,17 @@
+kind: pipeline
+type: docker
+name: default
+
+steps:
+  - name: backend
+    image: mcr.microsoft.com/dotnet/sdk:7.0
+    commands:
+      - cd backend
+      - dotnet build ./Ordo.Api/*.csproj
+
+  - name: frontend
+    image: node
+    commands:
+      - cd frontend
+      - npm install
+      - npm run build
