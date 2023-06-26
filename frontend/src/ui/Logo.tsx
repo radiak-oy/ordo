@@ -1,6 +1,6 @@
 export default function Logo() {
   return (
-    <div className="inline-flex flex-col">
+    <div className="inline-flex flex-col select-none">
       <span className="px-1 block text-2xl font-[Orbitron] font-bold text-secondary-900">
         Ordo
       </span>

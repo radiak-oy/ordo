@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import { AuthContext } from '../context/auth-context';
 import { MdLogout } from 'react-icons/md';
-import Logo from '../components/Logo';
+import Logo from '../ui/Logo';
 
 export default function Root() {
   const { username, logout } = useContext(AuthContext);
