@@ -23,7 +23,7 @@ textarea {
 }
 
 .btn-secondary {
-  @apply p-2 flex justify-center items-center rounded border border-secondary-500 hover:text-white hover:bg-secondary-500 transition;
+  @apply p-2 flex justify-center items-center rounded text-secondary-500 border border-secondary-500 hover:text-white hover:bg-secondary-500 transition;
 }
 
 .btn-danger {

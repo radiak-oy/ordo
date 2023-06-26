@@ -14,13 +14,15 @@ export default function Root() {
           <Logo />
           <NavLink
             to="gigs/upcoming"
-            className={({ isActive }) => `mx-8 ${isActive ? 'font-bold' : ''}`}
+            className={({ isActive }) =>
+              `ml-8 mr-4 p-2 ${isActive ? 'font-bold' : ''}`
+            }
           >
             Keikat
           </NavLink>
           <NavLink
             to="gigs/done"
-            className={({ isActive }) => `${isActive ? 'font-bold' : ''}`}
+            className={({ isActive }) => `p-2 ${isActive ? 'font-bold' : ''}`}
           >
             Historia
           </NavLink>
