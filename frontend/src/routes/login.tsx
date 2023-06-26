@@ -2,24 +2,43 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import createApi from '../api';
 import Logo from '../ui/Logo';
+import { CodeResponse, useGoogleLogin } from '@react-oauth/google';
 
 export default function Login() {
   const navigate = useNavigate();
 
-  const { login } = createApi();
+  const { login, loginWithGoogle } = createApi();
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   const [errorMessage, setErrorMessage] = useState('');
 
+  const loginGoogle = useGoogleLogin({
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    onSuccess: async (codeResponse: CodeResponse) => {
+      setErrorMessage('');
+      const result = await loginWithGoogle(codeResponse);
+
+      if (!result.ok) {
+        setErrorMessage('Kirjautuminen epäonnistui.');
+
+        return;
+      }
+
+      navigate('/');
+    },
+    flow: 'auth-code',
+  });
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setErrorMessage('');
 
     const result = await login(username, password);
 
     if (!result.ok) {
-      setErrorMessage(result.errorMessage);
+      setErrorMessage('Kirjautuminen epäonnistui.');
       return;
     }
 
@@ -34,6 +53,19 @@ export default function Login() {
           className="mt-4 p-4 m-auto max-w-xs flex flex-col rounded border bg-secondary-50"
           onSubmit={onSubmit}
         >
+          <button
+            type="button"
+            className="mb-2 w-full btn-primary"
+            onClick={loginGoogle}
+          >
+            Google
+          </button>
+
+          <div className="my-2 flex items-center">
+            <div className="grow h-0.5 bg-secondary-300"></div>
+            <span className="px-2 text-sm">tai</span>
+            <div className="grow h-0.5 bg-secondary-300"></div>
+          </div>
           <label htmlFor="input-username">Käyttäjänimi</label>
           <input
             id="input-username"

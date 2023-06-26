@@ -195,17 +195,6 @@ export interface paths {
         };
       };
     };
-    delete: {
-      parameters: {
-        query?: {
-          id?: string;
-        };
-      };
-      responses: {
-        /** @description Success */
-        200: never;
-      };
-    };
   };
   "/gigs/{id}": {
     get: {
@@ -249,6 +238,17 @@ export interface paths {
         };
       };
     };
+    delete: {
+      parameters: {
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: never;
+      };
+    };
   };
   "/login": {
     post: {
@@ -265,15 +265,30 @@ export interface paths {
       };
     };
   };
+  "/login-google": {
+    post: {
+      requestBody?: {
+        content: {
+          "application/json": components["schemas"]["LoginGoogleDto"];
+          "text/json": components["schemas"]["LoginGoogleDto"];
+          "application/*+json": components["schemas"]["LoginGoogleDto"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: never;
+      };
+    };
+  };
   "/whoami": {
     get: {
       responses: {
         /** @description Success */
         200: {
           content: {
-            "text/plain": string;
-            "application/json": string;
-            "text/json": string;
+            "text/plain": components["schemas"]["UserDto"];
+            "application/json": components["schemas"]["UserDto"];
+            "text/json": components["schemas"]["UserDto"];
           };
         };
       };
@@ -406,6 +421,11 @@ export interface components {
       userName: string;
       password: string;
     };
+    LoginGoogleDto: {
+      code: string;
+      scope: string;
+      prompt: string;
+    };
     PostGigDto: {
       /** Format: uuid */
       qualificationId: string;
@@ -437,6 +457,11 @@ export interface components {
       end: string;
       address: string;
       isSignedUp: boolean;
+    };
+    UserDto: {
+      id: string;
+      userName?: string | null;
+      roles: (string)[];
     };
   };
   responses: never;

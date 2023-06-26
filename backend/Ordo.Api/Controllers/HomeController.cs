@@ -1,9 +1,16 @@
 using System.Security.Claims;
+using Google.Apis.Auth;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Auth.OAuth2.Flows;
+using Google.Apis.Auth.OAuth2.Responses;
+using Google.Apis.Util.Store;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Ordo.Api.Dtos;
+using Ordo.Api.Models;
 using Ordo.Api.Security;
 
 namespace Ordo.Api.Controllers;
@@ -30,6 +37,11 @@ public class HomeController : ControllerBase
     [HttpPost("login")]
     public async Task<ActionResult> LoginAsync(LoginDto dto)
     {
+        if (string.IsNullOrWhiteSpace(dto.Password)) // prevent against possible empty password login for google accounts
+        {
+            return Unauthorized();
+        }
+
         var result = await _signInManager.PasswordSignInAsync(dto.UserName, dto.Password, isPersistent: true, lockoutOnFailure: false); // TODO: lockout
 
         if (result.Succeeded)
@@ -61,6 +73,87 @@ public class HomeController : ControllerBase
         }
 
         return Unauthorized();
+    }
+
+    [AllowAnonymous]
+    [HttpPost("login-google")]
+    public async Task<ActionResult> LoginWithGoogle(LoginGoogleDto dto)
+    {
+        var authzCodeFlow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
+        {
+            ClientSecrets = new()
+            {
+                ClientId = _configuration["Authentication:Google:ClientId"],
+                ClientSecret = _configuration["Authentication:Google:ClientSecret"],
+            },
+        });
+
+        var tokenResponse = await authzCodeFlow.ExchangeCodeForTokenAsync(new Guid().ToString(), dto.Code, redirectUri: _configuration["OAuth:Google:RedirectUri"], CancellationToken.None);
+
+        var idTokenPayload = await GoogleJsonWebSignature.ValidateAsync(tokenResponse.IdToken);
+
+        var isAuthorized = await _db.ExternalUsers.AnyAsync(x => x.Email == idTokenPayload.Email);
+
+        if (!isAuthorized)
+        {
+            return Unauthorized();
+        }
+
+        var user = await _userManager.FindByEmailAsync(idTokenPayload.Email);
+
+        if (user == null)
+        {
+            var result = await _userManager.CreateAsync(new IdentityUser
+            {
+                UserName = idTokenPayload.Email,
+                Email = idTokenPayload.Email,
+            });
+
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
+            }
+
+            user = await _userManager.FindByEmailAsync(idTokenPayload.Email) ?? throw new InvalidOperationException();
+
+            var profileExists = await _db.Profiles.AnyAsync(p => p.WorkerId == user.Id);
+
+            if (!profileExists)
+            {
+                await _userManager.AddToRoleAsync(user, RoleNames.Worker);
+
+                var profile = new Profile
+                {
+                    WorkerId = user.Id,
+                    Name = idTokenPayload.Name,
+                    Qualifications = new List<Qualification>(),
+                    Notes = "",
+                };
+
+                await _db.Profiles.AddAsync(profile);
+                await _db.SaveChangesAsync();
+            }
+        }
+
+        await _signInManager.SignInAsync(user, isPersistent: true);
+
+        Response.Cookies.Append("username", user.UserName!, new CookieOptions
+        {
+            Expires = DateTimeOffset.Now.AddDays(365),
+            IsEssential = true,
+            SameSite = SameSiteMode.Lax,
+        });
+
+        var role = await _userManager.IsInRoleAsync(user, RoleNames.Manager) ? "manager" : "worker";
+
+        Response.Cookies.Append("role", role, new CookieOptions
+        {
+            Expires = DateTimeOffset.Now.AddDays(365),
+            IsEssential = true,
+            SameSite = SameSiteMode.Lax,
+        });
+
+        return NoContent();
     }
 
     [HttpGet("whoami")]

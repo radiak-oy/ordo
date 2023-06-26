@@ -100,6 +100,21 @@ public class DbSeeder : IHostedService
 
                 await db.SaveChangesAsync();
             }
+
+            if (!db.ExternalUsers.Any())
+            {
+                await db.ExternalUsers.AddAsync(new ExternalUser()
+                {
+                    Email = "aarojkarell@gmail.com"
+                });
+
+                await db.ExternalUsers.AddAsync(new ExternalUser()
+                {
+                    Email = "admin@radiak.fi"
+                });
+
+                await db.SaveChangesAsync();
+            }
         }
     }
 

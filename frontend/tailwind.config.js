@@ -10,7 +10,7 @@ module.exports = {
         secondary: colors.gray,
       },
       screens: {
-        xs: '425px',
+        xs: '576px',
       },
     },
   },

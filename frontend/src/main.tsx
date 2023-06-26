@@ -22,14 +22,22 @@ import GigsUpcoming from './routes/gigs/upcoming';
 import GigsDone from './routes/gigs/done';
 import createApi, { GigDto, ProfileDto, QualificationDto } from './api';
 import Index from './routes';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+
+function getCookieValueURIDecodedByName(name: string): string | null {
+  const value =
+    document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'))?.[2] ?? null;
+
+  return value ? decodeURIComponent(value) : null;
+}
 
 function ProtectedRoute({ children }: PropsWithChildren) {
   const [username, setUsername] = useState(
-    /username=(\w*);?/.exec(document.cookie)?.[1] ?? null
+    getCookieValueURIDecodedByName('username')
   );
 
   const [role, setRole] = useState<'manager' | 'worker' | null>(
-    (/role=(\w*);?/.exec(document.cookie)?.[1] as 'manager' | 'worker') ?? null
+    (getCookieValueURIDecodedByName('role') as 'manager' | 'worker') ?? null
   );
 
   const { logout: logoutApi } = createApi();
@@ -253,8 +261,10 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <IconContext.Provider value={{ size: '1.25rem' }}>
-      <RouterProvider router={router} />
-    </IconContext.Provider>
+    <GoogleOAuthProvider clientId="591214992994-69hk2kaa2avd64d0lf1nlgau38fnviud.apps.googleusercontent.com">
+      <IconContext.Provider value={{ size: '1.25rem' }}>
+        <RouterProvider router={router} />
+      </IconContext.Provider>
+    </GoogleOAuthProvider>
   </React.StrictMode>
 );
