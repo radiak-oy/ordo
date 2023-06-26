@@ -37,11 +37,6 @@ public class HomeController : ControllerBase
     [HttpPost("login")]
     public async Task<ActionResult> LoginAsync(LoginDto dto)
     {
-        if (string.IsNullOrWhiteSpace(dto.Password)) // prevent against possible empty password login for google accounts
-        {
-            return Unauthorized();
-        }
-
         var result = await _signInManager.PasswordSignInAsync(dto.UserName, dto.Password, isPersistent: true, lockoutOnFailure: false); // TODO: lockout
 
         if (result.Succeeded)
