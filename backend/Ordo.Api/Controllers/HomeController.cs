@@ -87,9 +87,9 @@ public class HomeController : ControllerBase
 
         var idTokenPayload = await GoogleJsonWebSignature.ValidateAsync(tokenResponse.IdToken);
 
-        var isAuthorized = await _db.ExternalUsers.AnyAsync(x => x.Email == idTokenPayload.Email);
+        var externalUserRecord = await _db.ExternalUsers.SingleOrDefaultAsync(x => x.Email == idTokenPayload.Email);
 
-        if (!isAuthorized)
+        if (externalUserRecord == null)
         {
             return Unauthorized();
         }
@@ -98,31 +98,34 @@ public class HomeController : ControllerBase
 
         if (user == null)
         {
-            var result = await _userManager.CreateAsync(new IdentityUser
+            var resultCreateUser = await _userManager.CreateAsync(new IdentityUser
             {
                 UserName = idTokenPayload.Email,
                 Email = idTokenPayload.Email,
             });
 
-            if (!result.Succeeded)
+            if (!resultCreateUser.Succeeded)
             {
-                return BadRequest(result.Errors);
+                return BadRequest(resultCreateUser.Errors);
             }
 
             user = await _userManager.FindByEmailAsync(idTokenPayload.Email) ?? throw new InvalidOperationException();
 
-            var profileExists = await _db.Profiles.AnyAsync(p => p.WorkerId == user.Id);
+            var resultAddToRole = await _userManager.AddToRoleAsync(user, externalUserRecord.Role);
 
-            if (!profileExists)
+            if (!resultAddToRole.Succeeded)
             {
-                await _userManager.AddToRoleAsync(user, RoleNames.Worker);
+                throw new InvalidOperationException(resultAddToRole.Errors.ToString());
+            }
 
+            if (await _userManager.IsInRoleAsync(user, RoleNames.Worker))
+            {
                 var profile = new Profile
                 {
                     WorkerId = user.Id,
                     Name = idTokenPayload.Name,
                     Qualifications = new List<Qualification>(),
-                    Notes = "",
+                    Notes = $"Kirjautui sisään Googlen kautta. Sähköpostiosoite: {idTokenPayload.Email}",
                 };
 
                 await _db.Profiles.AddAsync(profile);
