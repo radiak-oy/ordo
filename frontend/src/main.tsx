@@ -23,6 +23,7 @@ import GigsDone from './routes/gigs/done';
 import createApi, { GigDto, ProfileDto, QualificationDto } from './api';
 import Index from './routes';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import StaffAdd from './routes/manage/staff/add';
 
 function getCookieValueURIDecodedByName(name: string): string | null {
   const value =
@@ -226,6 +227,19 @@ const router = createBrowserRouter([
                 ),
                 loader: async ({ request }) => {
                   return fetch('/api/profiles', { signal: request.signal });
+                },
+              },
+              {
+                path: 'add',
+                element: (
+                  <Title title="Lisää henkilö">
+                    <StaffAdd />
+                  </Title>
+                ),
+                loader: async ({ request }) => {
+                  return fetch('/api/qualifications', {
+                    signal: request.signal,
+                  });
                 },
               },
               {

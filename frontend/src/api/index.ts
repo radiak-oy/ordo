@@ -10,6 +10,7 @@ export type GigDto = components['schemas']['GigDto'];
 export type PostGigDto = components['schemas']['PostGigDto'];
 export type EditGigDto = components['schemas']['EditGigDto'];
 export type QualificationDto = components['schemas']['QualificationDto'];
+export type CreateProfileDto = components['schemas']['CreateProfileDto'];
 export type ProfileDto = components['schemas']['ProfileDto'];
 export type EditProfileDto = components['schemas']['EditProfileDto'];
 
@@ -80,6 +81,8 @@ export default function createApi() {
     deleteGig: (id: string): Promise<Result> =>
       requestApi('DELETE', `/api/gigs/${id}`),
 
+    createProfile: (dto: CreateProfileDto) =>
+      requestApi('POST', '/api/profiles', dto),
     editProfile: (
       workerId: string,
       dto: EditProfileDto

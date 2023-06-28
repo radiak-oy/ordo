@@ -315,6 +315,25 @@ export interface paths {
         };
       };
     };
+    post: {
+      requestBody?: {
+        content: {
+          "application/json": components["schemas"]["CreateProfileDto"];
+          "text/json": components["schemas"]["CreateProfileDto"];
+          "application/*+json": components["schemas"]["CreateProfileDto"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "text/plain": components["schemas"]["ProfileDto"];
+            "application/json": components["schemas"]["ProfileDto"];
+            "text/json": components["schemas"]["ProfileDto"];
+          };
+        };
+      };
+    };
   };
   "/profiles/{workerId}": {
     get: {
@@ -379,6 +398,11 @@ export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
+    CreateProfileDto: {
+      name: string;
+      qualificationIds: (string)[];
+      notes: string;
+    };
     DoneGigDto: {
       /** Format: uuid */
       id: string;
@@ -422,6 +446,7 @@ export interface components {
       password: string;
     };
     LoginGoogleDto: {
+      authUser: string;
       code: string;
       scope: string;
       prompt: string;

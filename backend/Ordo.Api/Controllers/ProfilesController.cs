@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Ordo.Api.Dtos;
+using Ordo.Api.Models;
 using Ordo.Api.Security;
 
 namespace Ordo.Api.Controllers;
@@ -12,10 +14,53 @@ namespace Ordo.Api.Controllers;
 public class ProfilesController : ControllerBase
 {
     private readonly ApplicationDbContext _db;
+    private readonly UserManager<IdentityUser> _userManager;
 
-    public ProfilesController(ApplicationDbContext db)
+    public ProfilesController(ApplicationDbContext db, UserManager<IdentityUser> userManager)
     {
         _db = db;
+        _userManager = userManager;
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<ProfileDto>> Create(CreateProfileDto dto)
+    {
+        var userId = Guid.NewGuid().ToString();
+        var resultCreateUser = await _userManager.CreateAsync(new IdentityUser
+        {
+            Id = userId,
+            UserName = userId,
+        });
+
+        if (!resultCreateUser.Succeeded)
+        {
+            throw new InvalidOperationException(resultCreateUser.Errors.ToString());
+        }
+
+        var user = await _userManager.FindByIdAsync(userId) ?? throw new InvalidOperationException();
+        await _userManager.AddToRoleAsync(user, RoleNames.Worker);
+
+        var qualifications = await _db.Qualifications
+            .Where(q => dto.QualificationIds.ToList().Contains(q.Id.ToString()))
+            .ToListAsync();
+
+        if (qualifications.Count != dto.QualificationIds.Length)
+        {
+            return BadRequest("One or more qualifications is invalid.");
+        }
+
+        var profile = new Profile
+        {
+            WorkerId = userId,
+            Name = dto.Name,
+            Notes = dto.Notes,
+            Qualifications = qualifications
+        };
+
+        await _db.Profiles.AddAsync(profile);
+        await _db.SaveChangesAsync();
+
+        return Ok(ProfileDto.FromModel(profile));
     }
 
     [HttpGet]
@@ -49,7 +94,7 @@ public class ProfilesController : ControllerBase
             return NotFound();
         }
 
-        var qualifications = await _db.Qualifications.Where(q => dto.QualificationIds.Any(id => q.Id.ToString() == id)).ToListAsync();
+        var qualifications = await _db.Qualifications.Where(q => dto.QualificationIds.ToList().Contains(q.Id.ToString())).ToListAsync();
         if (qualifications.Count != dto.QualificationIds.Length)
         {
             return BadRequest("One or more invalid qualification IDs.");

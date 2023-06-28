@@ -1,5 +1,6 @@
 import { useLoaderData, useNavigate } from 'react-router-dom';
 import { ProfileDto } from '../../../api';
+import { MdAdd } from 'react-icons/md';
 
 export default function Index() {
   const navigate = useNavigate();
@@ -8,6 +9,13 @@ export default function Index() {
 
   return (
     <div className="flex flex-col items-start">
+      <button
+        type="button"
+        className="mb-4 btn-primary-outline"
+        onClick={() => navigate('add')}
+      >
+        <MdAdd className="mr-1" /> <span>Lisää työntekijä</span>
+      </button>
       {profiles.length === 0 && <span className="mb-2">Ei henkilöstöä.</span>}
       {profiles.map((x) => (
         <div
