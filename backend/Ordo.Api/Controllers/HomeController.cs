@@ -83,7 +83,7 @@ public class HomeController : ControllerBase
             },
         });
 
-        var tokenResponse = await authzCodeFlow.ExchangeCodeForTokenAsync(new Guid().ToString(), dto.Code, redirectUri: _configuration["OAuth:Google:RedirectUri"], CancellationToken.None);
+        var tokenResponse = await authzCodeFlow.ExchangeCodeForTokenAsync(Guid.NewGuid().ToString(), dto.Code, redirectUri: _configuration["OAuth:Google:RedirectUri"], CancellationToken.None);
 
         var idTokenPayload = await GoogleJsonWebSignature.ValidateAsync(tokenResponse.IdToken);
 
