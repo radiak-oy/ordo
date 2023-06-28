@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MdArrowBack, MdDeleteForever, MdSave } from 'react-icons/md';
+import { MdAdd, MdArrowBack, MdDeleteForever, MdSave } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import createApi, {
   QualificationDto,
@@ -8,7 +8,7 @@ import createApi, {
   ProfileDto,
   EditGigDto,
 } from '../../api';
-import { format } from 'date-fns';
+import { addDays, addHours, format, setHours, setMinutes } from 'date-fns';
 import Selector from './Selector';
 
 interface GigUpsertFormProps {
@@ -30,11 +30,17 @@ export default function GigUpsertForm({
   const [qualificationId, setQualificationId] = useState(
     gigToEdit?.qualification.id ?? qualifications[0].id
   );
+
   const [startDateTime, setStartDateTime] = useState<Date>(
-    gigToEdit != null ? new Date(gigToEdit.start) : new Date()
+    gigToEdit != null
+      ? new Date(gigToEdit.start)
+      : addDays(setHours(setMinutes(new Date(), 0), 7), 1)
   );
+
   const [endDateTime, setEndDateTime] = useState<Date>(
-    gigToEdit != null ? new Date(gigToEdit.end) : new Date(startDateTime)
+    gigToEdit != null
+      ? new Date(gigToEdit.end)
+      : addHours(new Date(startDateTime), 8)
   );
 
   const [address, setAddress] = useState(gigToEdit?.address ?? '');
@@ -189,12 +195,26 @@ export default function GigUpsertForm({
         )}
 
         <div className="mt-2 flex flex-col items-start ">
-          <button type="submit" className="mb-2 btn-primary">
-            <MdSave className="mr-1" />
-            <span className="px-1">{isPostMode ? 'Julkaise' : 'Tallenna'}</span>
+          <button type="submit" className="btn-primary">
+            {isPostMode ? (
+              <>
+                <MdAdd className="mr-1" />
+                <span className="px-1">Julkaise</span>
+              </>
+            ) : (
+              <>
+                <MdSave className="mr-1" />
+                <span className="px-1">Tallenna</span>
+              </>
+            )}
           </button>
+
           {!isPostMode && (
-            <button type="button" className="btn-danger" onClick={onDelete}>
+            <button
+              type="button"
+              className="mt-2 btn-danger"
+              onClick={onDelete}
+            >
               <MdDeleteForever className="mr-1" />
               Poista
             </button>
