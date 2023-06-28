@@ -15,7 +15,7 @@ export default function Root() {
           <NavLink
             to="gigs/upcoming"
             className={({ isActive }) =>
-              `ml-8 mr-4 p-2 ${isActive ? 'font-bold' : ''}`
+              `ml-6 mr-4 p-2 ${isActive ? 'font-bold' : ''}`
             }
           >
             Keikat
