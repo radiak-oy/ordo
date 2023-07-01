@@ -68,12 +68,12 @@ public class ProfilesController : ControllerBase
         await _db.Profiles.AddAsync(profile);
         await _db.SaveChangesAsync();
 
-        await _mailService.SendEmailAsync(new MailRequest
-        {
-            ToEmail = user.Email!,
-            Subject = "Tunnuksesi Ordo-palveluun",
-            Body = "Tämä on testi",
-        });
+        // await _mailService.SendEmailAsync(new MailRequest
+        // {
+        //     ToEmail = user.Email!,
+        //     Subject = "Tunnuksesi Ordo-palveluun",
+        //     Body = "Tämä on testi",
+        // });
 
         return Ok(ProfileDto.FromModel(profile));
     }
