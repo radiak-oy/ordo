@@ -9,7 +9,7 @@ export default function Login() {
 
   const { login, loginWithGoogle } = createApi();
 
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const [errorMessage, setErrorMessage] = useState('');
@@ -35,7 +35,7 @@ export default function Login() {
     e.preventDefault();
     setErrorMessage('');
 
-    const result = await login(username, password);
+    const result = await login(email, password);
 
     if (!result.ok) {
       setErrorMessage('Kirjautuminen epäonnistui.');
@@ -66,12 +66,13 @@ export default function Login() {
             <span className="px-2 text-sm">tai</span>
             <div className="grow h-0.5 bg-secondary-300"></div>
           </div>
-          <label htmlFor="input-username">Käyttäjänimi</label>
+          <label htmlFor="input-email">Sähköpostiosoite</label>
           <input
-            id="input-username"
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            id="input-email"
+            type="email"
+            value={email}
+            required
+            onChange={(e) => setEmail(e.target.value)}
             className="mb-2"
           />
 
@@ -80,9 +81,17 @@ export default function Login() {
             id="input-password"
             type="password"
             value={password}
+            required
             onChange={(e) => setPassword(e.target.value)}
-            className="mb-4"
+            className="mb-2"
           />
+
+          <a
+            href="/forgot-password"
+            className="mb-4 underline underline-offset-4 text-blue-500"
+          >
+            Unohditko salasanasi?
+          </a>
 
           <button type="submit" className="mb-2 w-full btn-primary">
             Kirjaudu sisään

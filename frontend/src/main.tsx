@@ -24,6 +24,10 @@ import createApi, { GigDto, ProfileDto, QualificationDto } from './api';
 import Index from './routes';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import StaffAdd from './routes/manage/staff/add';
+import ResetPassword from './routes/reset-password';
+import ForgotPassword from './routes/forgot-password';
+import Settings from './routes/settings';
+import ManageSettings from './routes/manage/settings';
 
 function getCookieValueURIDecodedByName(name: string): string | null {
   const value =
@@ -91,6 +95,24 @@ const router = createBrowserRouter([
     ),
   },
   {
+    path: '/forgot-password',
+    errorElement: <ErrorPage />,
+    element: (
+      <Title title="Unohdin salasanani">
+        <ForgotPassword />
+      </Title>
+    ),
+  },
+  {
+    path: '/reset-password',
+    errorElement: <ErrorPage />,
+    element: (
+      <Title title="Vaihda salasana">
+        <ResetPassword />
+      </Title>
+    ),
+  },
+  {
     path: '/',
     errorElement: <ErrorPage />,
     element: (
@@ -137,6 +159,14 @@ const router = createBrowserRouter([
                 },
               },
             ],
+          },
+          {
+            path: 'settings',
+            element: (
+              <Title title="Asetukset">
+                <Settings />
+              </Title>
+            ),
           },
         ],
       },
@@ -266,6 +296,14 @@ const router = createBrowserRouter([
                 },
               },
             ],
+          },
+          {
+            path: 'settings',
+            element: (
+              <Title title="Asetukset">
+                <ManageSettings />
+              </Title>
+            ),
           },
         ],
       },

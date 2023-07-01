@@ -1,8 +1,8 @@
 import { createContext } from 'react';
 
 interface AuthContext {
-  username: string | null;
-  role: 'manager' | 'worker' | null;
+  username: string;
+  role: 'manager' | 'worker';
   logout: () => Promise<void>;
 }
 

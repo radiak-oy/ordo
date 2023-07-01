@@ -1,4 +1,3 @@
-using Google.Apis.Util.Store;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -6,7 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Npgsql;
 using Ordo.Api.OpenApi;
+using Ordo.Api.Options;
 using Ordo.Api.Security;
+using Ordo.Api.Services;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -42,7 +43,13 @@ builder.Services
         options.Password.RequireNonAlphanumeric = false;
         options.Password.RequireUppercase = false;
     })
+    .AddDefaultTokenProviders()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
+{
+    options.TokenLifespan = TimeSpan.FromDays(1);
+});
 
 // builder.Services.AddAuthentication().AddCookie().AddGoogle(options =>
 // {
@@ -72,6 +79,9 @@ builder.Services.ConfigureApplicationCookie(options =>
         }
     };
 });
+
+builder.Services.Configure<MailOptions>(builder.Configuration.GetSection(MailOptions.Mail));
+builder.Services.AddTransient<IMailService, MailService>();
 
 var app = builder.Build();
 

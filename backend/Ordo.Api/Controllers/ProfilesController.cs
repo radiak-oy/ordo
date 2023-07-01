@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Ordo.Api.Dtos;
+using Ordo.Api.Mail;
 using Ordo.Api.Models;
 using Ordo.Api.Security;
+using Ordo.Api.Services;
 
 namespace Ordo.Api.Controllers;
 
@@ -15,21 +17,27 @@ public class ProfilesController : ControllerBase
 {
     private readonly ApplicationDbContext _db;
     private readonly UserManager<IdentityUser> _userManager;
+    private readonly IMailService _mailService;
 
-    public ProfilesController(ApplicationDbContext db, UserManager<IdentityUser> userManager)
+    public ProfilesController(ApplicationDbContext db, UserManager<IdentityUser> userManager, IMailService mailService)
     {
         _db = db;
         _userManager = userManager;
+        _mailService = mailService;
     }
 
     [HttpPost]
     public async Task<ActionResult<ProfileDto>> Create(CreateProfileDto dto)
     {
-        var userId = Guid.NewGuid().ToString();
+        if (await _userManager.FindByEmailAsync(dto.Email) != null)
+        {
+            return Conflict("A user with this email already exists.");
+        }
+
         var resultCreateUser = await _userManager.CreateAsync(new IdentityUser
         {
-            Id = userId,
-            UserName = userId,
+            UserName = dto.Email,
+            Email = dto.Email
         });
 
         if (!resultCreateUser.Succeeded)
@@ -37,7 +45,7 @@ public class ProfilesController : ControllerBase
             throw new InvalidOperationException(resultCreateUser.Errors.ToString());
         }
 
-        var user = await _userManager.FindByIdAsync(userId) ?? throw new InvalidOperationException();
+        var user = await _userManager.FindByEmailAsync(dto.Email) ?? throw new InvalidOperationException();
         await _userManager.AddToRoleAsync(user, RoleNames.Worker);
 
         var qualifications = await _db.Qualifications
@@ -51,7 +59,7 @@ public class ProfilesController : ControllerBase
 
         var profile = new Profile
         {
-            WorkerId = userId,
+            WorkerId = user.Id,
             Name = dto.Name,
             Notes = dto.Notes,
             Qualifications = qualifications
@@ -59,6 +67,13 @@ public class ProfilesController : ControllerBase
 
         await _db.Profiles.AddAsync(profile);
         await _db.SaveChangesAsync();
+
+        await _mailService.SendEmailAsync(new MailRequest
+        {
+            ToEmail = user.Email!,
+            Subject = "Tunnuksesi Ordo-palveluun",
+            Body = "Tämä on testi",
+        });
 
         return Ok(ProfileDto.FromModel(profile));
     }

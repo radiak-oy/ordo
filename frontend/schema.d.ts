@@ -294,6 +294,36 @@ export interface paths {
       };
     };
   };
+  "/request-reset-password": {
+    post: {
+      requestBody?: {
+        content: {
+          "application/json": components["schemas"]["RequestResetPasswordDto"];
+          "text/json": components["schemas"]["RequestResetPasswordDto"];
+          "application/*+json": components["schemas"]["RequestResetPasswordDto"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: never;
+      };
+    };
+  };
+  "/reset-password": {
+    post: {
+      requestBody?: {
+        content: {
+          "application/json": components["schemas"]["ResetPasswordDto"];
+          "text/json": components["schemas"]["ResetPasswordDto"];
+          "application/*+json": components["schemas"]["ResetPasswordDto"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: never;
+      };
+    };
+  };
   "/logout": {
     post: {
       responses: {
@@ -399,6 +429,7 @@ export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
     CreateProfileDto: {
+      email: string;
       name: string;
       qualificationIds: (string)[];
       notes: string;
@@ -442,7 +473,7 @@ export interface components {
       workerIds: (string)[];
     };
     LoginDto: {
-      userName: string;
+      email: string;
       password: string;
     };
     LoginGoogleDto: {
@@ -471,6 +502,13 @@ export interface components {
     QualificationDto: {
       id: string;
       name: string;
+    };
+    RequestResetPasswordDto: {
+      email: string;
+    };
+    ResetPasswordDto: {
+      token: string;
+      newPassword: string;
     };
     UpcomingGigDto: {
       /** Format: uuid */

@@ -4,6 +4,10 @@ import { Result } from './result';
 
 type LoginDto = components['schemas']['LoginDto'];
 type LoginGoogleDto = components['schemas']['LoginGoogleDto'];
+
+type RequestResetPasswordDto = components['schemas']['RequestResetPasswordDto'];
+type ResetPasswordDto = components['schemas']['ResetPasswordDto'];
+
 export type DoneGigDto = components['schemas']['DoneGigDto'];
 export type UpcomingGigDto = components['schemas']['UpcomingGigDto'];
 export type GigDto = components['schemas']['GigDto'];
@@ -60,13 +64,29 @@ export default function createApi() {
   }
 
   return {
-    login: (username: string, password: string): Promise<Result> =>
+    login: (email: string, password: string): Promise<Result> =>
       requestApi('POST', '/api/login', {
-        userName: username,
+        email,
         password,
       } as LoginDto),
     loginWithGoogle: (codeResponse: CodeResponse): Promise<Result> =>
       requestApi('POST', '/api/login-google', codeResponse as LoginGoogleDto),
+
+    requestResetPassword: (email: string): Promise<Result> =>
+      requestApi('POST', '/api/request-reset-password', {
+        email,
+      } as RequestResetPasswordDto),
+    resetPassword: (
+      userId: string,
+      token: string,
+      newPassword: string
+    ): Promise<Result> =>
+      requestApi('POST', '/api/reset-password', {
+        userId,
+        token,
+        newPassword,
+      } as ResetPasswordDto),
+
     logout: (): Promise<Result> => requestApi('POST', '/api/logout'),
 
     signUp: (id: string): Promise<Result> =>

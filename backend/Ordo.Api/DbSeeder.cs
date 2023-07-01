@@ -46,19 +46,23 @@ public class DbSeeder : IHostedService
 
         if (isDevelopment)
         {
+            string emailRobert = "robert.dahlstrom@stafftime.fi";
+            string emailAaro = "aarojkarell@gmail.com";
+            string emailMatti = "matti@testi.fi";
+
             if (!userManager.Users.Any())
             {
-                await userManager.CreateAsync(new IdentityUser { UserName = "robert" }, "robert");
+                await userManager.CreateAsync(new IdentityUser { Email = emailRobert, UserName = emailRobert }, "robert");
 
-                var manager = await userManager.FindByNameAsync("robert") ?? throw new InvalidOperationException();
+                var manager = await userManager.FindByEmailAsync(emailRobert) ?? throw new InvalidOperationException();
 
                 await userManager.AddToRoleAsync(manager, RoleNames.Manager);
 
-                await userManager.CreateAsync(new IdentityUser { UserName = "aaro" }, "aaro");
-                await userManager.CreateAsync(new IdentityUser { UserName = "matti" }, "matti");
+                await userManager.CreateAsync(new IdentityUser { Email = emailAaro, UserName = emailAaro }, "aaro");
+                await userManager.CreateAsync(new IdentityUser { Email = emailMatti, UserName = emailMatti }, "matti");
 
-                var aaro = await userManager.FindByNameAsync("aaro") ?? throw new InvalidOperationException();
-                var matti = await userManager.FindByNameAsync("matti") ?? throw new InvalidOperationException();
+                var aaro = await userManager.FindByEmailAsync(emailAaro) ?? throw new InvalidOperationException();
+                var matti = await userManager.FindByNameAsync(emailMatti) ?? throw new InvalidOperationException();
 
                 await userManager.AddToRoleAsync(aaro, RoleNames.Worker);
                 await userManager.AddToRoleAsync(matti, RoleNames.Worker);
@@ -66,8 +70,8 @@ public class DbSeeder : IHostedService
 
             if (!db.Profiles.Any())
             {
-                var userAaro = await userManager.FindByNameAsync("aaro") ?? throw new InvalidOperationException();
-                var userMatti = await userManager.FindByNameAsync("matti") ?? throw new InvalidOperationException();
+                var userAaro = await userManager.FindByEmailAsync(emailAaro) ?? throw new InvalidOperationException();
+                var userMatti = await userManager.FindByNameAsync(emailMatti) ?? throw new InvalidOperationException();
 
                 var qualificationHaalaus = await db.Qualifications.SingleAsync(q => q.Name == "Haalaus");
                 var qualificationLaatoitus = await db.Qualifications.SingleAsync(q => q.Name == "Laatoitus");

@@ -22,6 +22,7 @@ export default function ProfileUpsertForm({
   const navigate = useNavigate();
   const { createProfile, editProfile } = createApi();
 
+  const [email, setEmail] = useState('');
   const [name, setName] = useState(profileToEdit?.name ?? '');
   const [qualificationIdsSelected, setQualificationIdsSelected] = useState<
     string[]
@@ -41,6 +42,7 @@ export default function ProfileUpsertForm({
             notes,
           } as EditProfileDto)
         : await createProfile({
+            email,
             name,
             qualificationIds: qualificationIdsSelected,
             notes,
@@ -71,6 +73,23 @@ export default function ProfileUpsertForm({
         <span className="mb-2 text-lg font-semibold">
           {isCreateMode ? 'Lisää henkilö' : `Muokkaa henkilöä ${name}`}
         </span>
+
+        {isCreateMode && (
+          <>
+            <label htmlFor="input-email">Sähköpostiosoite</label>
+            <input
+              id="input-email"
+              type="email"
+              required
+              className=""
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <span className="mt-1 mb-2 text-secondary-700">
+              Varmista sähköpostiosoitteen oikeinkirjoitus.
+            </span>
+          </>
+        )}
 
         <label htmlFor="input-name">Nimi</label>
         <input
