@@ -179,8 +179,8 @@ public class HomeController : ControllerBase
         await _mailService.SendEmailAsync(new MailRequest
         {
             ToEmail = user.Email!,
-            Subject = "Vaihda salasana - Ordo",
-            Body = $"Hei,<br /><br /><a href=\"{url}\">Vaihda salasanasi painamalla tästä</a><br /><br />Linkki on voimassa yhden vuorokauden.",
+            Subject = "[Ordo] Vaihda salasanasi",
+            Body = $"Hei,<br /><br /><a href=\"{url}\">Pääset vaihtamaan salasanasi painamalla tästä</a><br /><br />Linkki on voimassa yhden vuorokauden.",
         });
 
         return NoContent();
