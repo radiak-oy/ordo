@@ -166,6 +166,12 @@ public class HomeController : ControllerBase
             return NoContent();
         }
 
+        // prevent external (e.g. google) users from setting a password (for now)
+        if (await _db.ExternalUsers.AnyAsync(x => x.Email == user.Email))
+        {
+            return NoContent();
+        }
+
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
         var url = $"{_configuration["WebBaseUrl"]}/reset-password?userId={UrlEncoder.Default.Encode(user.Id)}&token={UrlEncoder.Default.Encode(token)}";
