@@ -1,6 +1,6 @@
 namespace Ordo.Api.Dtos;
 
-public readonly record struct EditProfileDto
+public readonly record struct EditWorkerDto
 {
     public string Name { get; init; }
     public string[] QualificationIds { get; init; }

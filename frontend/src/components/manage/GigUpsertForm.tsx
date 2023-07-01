@@ -5,7 +5,7 @@ import createApi, {
   QualificationDto,
   PostGigDto,
   GigDto,
-  ProfileDto,
+  WorkerDto,
   EditGigDto,
 } from '../../api';
 import { addDays, addHours, format, setHours, setMinutes } from 'date-fns';
@@ -14,13 +14,13 @@ import Selector from './Selector';
 interface GigUpsertFormProps {
   qualifications: QualificationDto[];
   gigToEdit: GigDto | null;
-  profiles: ProfileDto[] | null;
+  workers: WorkerDto[] | null;
 }
 
 export default function GigUpsertForm({
   gigToEdit,
   qualifications,
-  profiles,
+  workers,
 }: GigUpsertFormProps) {
   const isPostMode = gigToEdit == null;
   const navigate = useNavigate();
@@ -173,21 +173,21 @@ export default function GigUpsertForm({
           onChange={(e) => setMaxWorkers(parseInt(e.target.value))}
         />
 
-        {profiles && !isPostMode && (
+        {workers && !isPostMode && (
           <Selector
             title={`Ilmoittautuneet työntekijät (${workerIdsSelected.length}/${maxWorkers})`}
             addTitle="Lisää työntekijä"
             noneTitle="Ei työntekijöitä"
             max={maxWorkers}
-            options={profiles
-              .filter((p) =>
-                p.qualifications.some(
+            options={workers
+              .filter((w) =>
+                w.qualifications.some(
                   (q) => q.id === gigToEdit.qualification.id
                 )
               )
-              .map((p) => ({
-                id: p.workerId,
-                name: p.name,
+              .map((w) => ({
+                id: w.id,
+                name: w.name,
               }))}
             selectedIds={workerIdsSelected}
             onChange={(newIds) => setWorkerIdsSelected(newIds)}

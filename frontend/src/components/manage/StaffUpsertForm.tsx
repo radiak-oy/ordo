@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import createApi, {
-  CreateProfileDto,
-  EditProfileDto,
-  ProfileDto,
+  AddWorkerDto,
+  EditWorkerDto,
+  WorkerDto,
   QualificationDto,
 } from '../../api';
 import { MdAdd, MdArrowBack, MdSave } from 'react-icons/md';
@@ -11,23 +11,23 @@ import Selector from './Selector';
 
 interface ProfileUpsertFormProps {
   qualifications: QualificationDto[];
-  profileToEdit: ProfileDto | null;
+  workerToEdit: WorkerDto | null;
 }
 
 export default function ProfileUpsertForm({
   qualifications,
-  profileToEdit,
+  workerToEdit,
 }: ProfileUpsertFormProps) {
-  const isCreateMode = profileToEdit == null;
+  const isCreateMode = workerToEdit == null;
   const navigate = useNavigate();
-  const { createProfile, editProfile } = createApi();
+  const { addWorker, editWorker } = createApi();
 
   const [email, setEmail] = useState('');
-  const [name, setName] = useState(profileToEdit?.name ?? '');
+  const [name, setName] = useState(workerToEdit?.name ?? '');
   const [qualificationIdsSelected, setQualificationIdsSelected] = useState<
     string[]
-  >(profileToEdit?.qualifications.map((q) => q.id) ?? []);
-  const [notes, setNotes] = useState(profileToEdit?.notes ?? '');
+  >(workerToEdit?.qualifications.map((q) => q.id) ?? []);
+  const [notes, setNotes] = useState(workerToEdit?.notes ?? '');
 
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -35,18 +35,18 @@ export default function ProfileUpsertForm({
     e.preventDefault();
 
     const result =
-      profileToEdit != null
-        ? await editProfile(profileToEdit.workerId, {
+      workerToEdit != null
+        ? await editWorker(workerToEdit.id, {
             name,
             qualificationIds: qualificationIdsSelected,
             notes,
-          } as EditProfileDto)
-        : await createProfile({
+          } as EditWorkerDto)
+        : await addWorker({
             email,
             name,
             qualificationIds: qualificationIdsSelected,
             notes,
-          } as CreateProfileDto);
+          } as AddWorkerDto);
 
     if (!result.ok) {
       setErrorMessage(result.errorMessage);

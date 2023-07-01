@@ -6,6 +6,6 @@ export default function Add() {
   const qualifications = useLoaderData() as QualificationDto[];
 
   return (
-    <ProfileUpsertForm qualifications={qualifications} profileToEdit={null} />
+    <ProfileUpsertForm qualifications={qualifications} workerToEdit={null} />
   );
 }

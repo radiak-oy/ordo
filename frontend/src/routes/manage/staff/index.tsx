@@ -1,11 +1,11 @@
 import { useLoaderData, useNavigate } from 'react-router-dom';
-import { ProfileDto } from '../../../api';
+import { WorkerDto } from '../../../api';
 import { MdAdd } from 'react-icons/md';
 
 export default function Index() {
   const navigate = useNavigate();
 
-  const profiles = useLoaderData() as ProfileDto[];
+  const workers = useLoaderData() as WorkerDto[];
 
   return (
     <div className="flex flex-col items-start">
@@ -16,12 +16,12 @@ export default function Index() {
       >
         <MdAdd className="mr-1" /> <span>Lisää työntekijä</span>
       </button>
-      {profiles.length === 0 && <span className="mb-2">Ei henkilöstöä.</span>}
-      {profiles.map((x) => (
+      {workers.length === 0 && <span className="mb-2">Ei henkilöstöä.</span>}
+      {workers.map((x) => (
         <div
-          key={x.workerId}
+          key={x.id}
           className="mb-4 p-2 w-full flex rounded cursor-pointer border-2 border-secondary-300 hover:border-secondary-400"
-          onClick={() => navigate(x.workerId)}
+          onClick={() => navigate(x.id)}
         >
           <div className="w-2/3 flex flex-col">
             <span className="mb-2">{x.name}</span>

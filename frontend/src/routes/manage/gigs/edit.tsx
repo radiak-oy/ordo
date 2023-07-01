@@ -1,19 +1,19 @@
 import { useLoaderData } from 'react-router-dom';
-import { GigDto, ProfileDto, QualificationDto } from '../../../api';
+import { GigDto, WorkerDto, QualificationDto } from '../../../api';
 import GigUpsertForm from '../../../components/manage/GigUpsertForm';
 
 export default function Edit() {
-  const { gig, qualifications, profiles } = useLoaderData() as {
+  const { gig, qualifications, workers } = useLoaderData() as {
     gig: GigDto;
     qualifications: QualificationDto[];
-    profiles: ProfileDto[];
+    workers: WorkerDto[];
   };
 
   return (
     <GigUpsertForm
       gigToEdit={gig}
       qualifications={qualifications}
-      profiles={profiles}
+      workers={workers}
     />
   );
 }

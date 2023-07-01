@@ -14,9 +14,9 @@ export type GigDto = components['schemas']['GigDto'];
 export type PostGigDto = components['schemas']['PostGigDto'];
 export type EditGigDto = components['schemas']['EditGigDto'];
 export type QualificationDto = components['schemas']['QualificationDto'];
-export type CreateProfileDto = components['schemas']['CreateProfileDto'];
-export type ProfileDto = components['schemas']['ProfileDto'];
-export type EditProfileDto = components['schemas']['EditProfileDto'];
+export type AddWorkerDto = components['schemas']['AddWorkerDto'];
+export type WorkerDto = components['schemas']['WorkerDto'];
+export type EditWorkerDto = components['schemas']['EditWorkerDto'];
 
 export default function createApi() {
   async function requestApi<T>(
@@ -101,12 +101,11 @@ export default function createApi() {
     deleteGig: (id: string): Promise<Result> =>
       requestApi('DELETE', `/api/gigs/${id}`),
 
-    createProfile: (dto: CreateProfileDto) =>
-      requestApi('POST', '/api/profiles', dto),
-    editProfile: (
+    addWorker: (dto: AddWorkerDto) => requestApi('POST', '/api/workers', dto),
+    editWorker: (
       workerId: string,
-      dto: EditProfileDto
-    ): Promise<Result<ProfileDto>> =>
-      requestApi('PUT', `/api/profiles/${workerId}`, dto),
+      dto: EditWorkerDto
+    ): Promise<Result<WorkerDto>> =>
+      requestApi('PUT', `/api/workers/${workerId}`, dto),
   };
 }

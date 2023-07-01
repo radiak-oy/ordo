@@ -20,7 +20,7 @@ import Staff from './routes/manage/staff';
 import StaffEdit from './routes/manage/staff/edit';
 import GigsUpcoming from './routes/gigs/upcoming';
 import GigsDone from './routes/gigs/done';
-import createApi, { GigDto, ProfileDto, QualificationDto } from './api';
+import createApi, { GigDto, WorkerDto, QualificationDto } from './api';
 import Index from './routes';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import StaffAdd from './routes/manage/staff/add';
@@ -234,13 +234,13 @@ const router = createBrowserRouter([
                     })
                   ).json()) as QualificationDto[];
 
-                  const profiles = (await (
-                    await fetch('/api/profiles', {
+                  const workers = (await (
+                    await fetch('/api/workers', {
                       signal: request.signal,
                     })
-                  ).json()) as ProfileDto[];
+                  ).json()) as WorkerDto[];
 
-                  return { gig, qualifications, profiles };
+                  return { gig, qualifications, workers };
                 },
               },
             ],
@@ -256,7 +256,7 @@ const router = createBrowserRouter([
                   </Title>
                 ),
                 loader: async ({ request }) => {
-                  return fetch('/api/profiles', { signal: request.signal });
+                  return fetch('/api/workers', { signal: request.signal });
                 },
               },
               {
@@ -286,13 +286,13 @@ const router = createBrowserRouter([
                     })
                   ).json()) as QualificationDto[];
 
-                  const profile = (await (
-                    await fetch(`/api/profiles/${params.id!}`, {
+                  const worker = (await (
+                    await fetch(`/api/workers/${params.id!}`, {
                       signal: request.signal,
                     })
-                  ).json()) as ProfileDto;
+                  ).json()) as WorkerDto;
 
-                  return { profile, qualifications };
+                  return { worker, qualifications };
                 },
               },
             ],

@@ -8,7 +8,7 @@ export default function Post() {
   return (
     <GigUpsertForm
       gigToEdit={null}
-      profiles={null}
+      workers={null}
       qualifications={qualifications}
     />
   );

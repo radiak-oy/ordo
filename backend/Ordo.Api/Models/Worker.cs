@@ -1,8 +1,8 @@
 namespace Ordo.Api.Models;
 
-public class Profile
+public class Worker
 {
-    public string WorkerId { get; set; } = null!;
+    public string Id { get; set; } = null!;
     public string Name { get; set; } = null!;
     public List<Qualification> Qualifications { get; set; } = null!;
     public string Notes { get; set; } = null!;

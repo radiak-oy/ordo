@@ -68,7 +68,7 @@ public class DbSeeder : IHostedService
                 await userManager.AddToRoleAsync(matti, RoleNames.Worker);
             }
 
-            if (!db.Profiles.Any())
+            if (!db.Workers.Any())
             {
                 var userAaro = await userManager.FindByEmailAsync(emailAaro) ?? throw new InvalidOperationException();
                 var userMatti = await userManager.FindByNameAsync(emailMatti) ?? throw new InvalidOperationException();
@@ -77,30 +77,30 @@ public class DbSeeder : IHostedService
                 var qualificationLaatoitus = await db.Qualifications.SingleAsync(q => q.Name == "Laatoitus");
                 var qualificationPurkutyö = await db.Qualifications.SingleAsync(q => q.Name == "Purkutyö");
 
-                var profileAaro = new Profile
+                var workerAaro = new Worker
                 {
-                    WorkerId = userAaro.Id,
+                    Id = userAaro.Id,
                     Name = "Aaro Karell",
                     Qualifications = new List<Qualification>(),
                     Notes = "Suorittanut vuorot: 15.06, 19.06. yht. 14 tuntia"
                 };
 
-                var profileMatti = new Profile
+                var workerMatti = new Worker
                 {
-                    WorkerId = userMatti.Id,
+                    Id = userMatti.Id,
                     Name = "Matti Tamminen",
                     Qualifications = new List<Qualification>(),
                     Notes = "Poissa heinäkuuhun asti."
                 };
 
-                await db.Profiles.AddAsync(profileAaro);
-                await db.Profiles.AddAsync(profileMatti);
+                await db.Workers.AddAsync(workerAaro);
+                await db.Workers.AddAsync(workerMatti);
 
-                profileAaro.Qualifications.Add(qualificationHaalaus);
+                workerAaro.Qualifications.Add(qualificationHaalaus);
 
-                profileMatti.Qualifications.Add(qualificationHaalaus);
-                profileMatti.Qualifications.Add(qualificationLaatoitus);
-                profileMatti.Qualifications.Add(qualificationPurkutyö);
+                workerMatti.Qualifications.Add(qualificationHaalaus);
+                workerMatti.Qualifications.Add(qualificationLaatoitus);
+                workerMatti.Qualifications.Add(qualificationPurkutyö);
 
                 await db.SaveChangesAsync();
             }

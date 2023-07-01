@@ -1,17 +1,14 @@
 import { useLoaderData } from 'react-router-dom';
-import { ProfileDto, QualificationDto } from '../../../api';
+import { WorkerDto, QualificationDto } from '../../../api';
 import ProfileUpsertForm from '../../../components/manage/StaffUpsertForm';
 
 export default function Edit() {
-  const { profile, qualifications } = useLoaderData() as {
-    profile: ProfileDto;
+  const { worker, qualifications } = useLoaderData() as {
+    worker: WorkerDto;
     qualifications: QualificationDto[];
   };
 
   return (
-    <ProfileUpsertForm
-      qualifications={qualifications}
-      profileToEdit={profile}
-    />
+    <ProfileUpsertForm qualifications={qualifications} workerToEdit={worker} />
   );
 }

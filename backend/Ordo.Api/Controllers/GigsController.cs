@@ -26,12 +26,12 @@ public class GigsController : ControllerBase
     [HttpGet("done")]
     public async Task<ActionResult<IEnumerable<DoneGigDto>>> GetAllDone()
     {
-        var profile = await _db.Profiles
+        var worker = await _db.Workers
             .AsNoTracking()
-            .Include(p => p.Qualifications)
-            .SingleOrDefaultAsync(p => p.WorkerId == UserId);
+            .Include(w => w.Qualifications)
+            .SingleOrDefaultAsync(w => w.Id == UserId);
 
-        if (profile == null)
+        if (worker == null)
         {
             return NotFound();
         }
@@ -40,7 +40,7 @@ public class GigsController : ControllerBase
             .AsNoTracking()
             .Include(g => g.Qualification)
             .OrderBy(g => g.Start)
-            .Where(g => g.WorkerIds.Contains(profile.WorkerId))
+            .Where(g => g.WorkerIds.Contains(worker.Id))
             .Where(g => g.End < DateTimeOffset.UtcNow)
             .ToListAsync();
 
@@ -59,12 +59,12 @@ public class GigsController : ControllerBase
     [HttpGet("upcoming")]
     public async Task<ActionResult<IEnumerable<UpcomingGigDto>>> GetAllUpcoming()
     {
-        var profile = await _db.Profiles
+        var worker = await _db.Workers
             .AsNoTracking()
-            .Include(p => p.Qualifications)
-            .SingleOrDefaultAsync(p => p.WorkerId == UserId);
+            .Include(w => w.Qualifications)
+            .SingleOrDefaultAsync(w => w.Id == UserId);
 
-        if (profile == null)
+        if (worker == null)
         {
             return NotFound();
         }
@@ -74,7 +74,7 @@ public class GigsController : ControllerBase
             .Include(g => g.Qualification)
             .OrderBy(g => g.Start)
             .Where(g => DateTimeOffset.UtcNow <= g.End)
-            .Where(g => profile.Qualifications.Contains(g.Qualification))
+            .Where(g => worker.Qualifications.Contains(g.Qualification))
             .ToListAsync();
 
         var dtos = gigsUpcoming.Select(g => new UpcomingGigDto
@@ -84,7 +84,7 @@ public class GigsController : ControllerBase
             Start = g.Start,
             End = g.End,
             Address = g.Address,
-            IsSignedUp = g.WorkerIds.Contains(profile.WorkerId)
+            IsSignedUp = g.WorkerIds.Contains(worker.Id)
         });
 
         return Ok(dtos);
@@ -102,22 +102,22 @@ public class GigsController : ControllerBase
             return NotFound();
         }
 
-        var profile = await _db.Profiles
+        var worker = await _db.Workers
             .AsNoTracking()
-            .Include(p => p.Qualifications)
-            .SingleOrDefaultAsync(p => p.WorkerId == UserId);
+            .Include(w => w.Qualifications)
+            .SingleOrDefaultAsync(w => w.Id == UserId);
 
-        if (profile == null)
+        if (worker == null)
         {
-            return NotFound("Profile not found.");
+            return NotFound("Worker not found.");
         }
 
-        if (gig.WorkerIds.Any(id => id == profile.WorkerId))
+        if (gig.WorkerIds.Any(id => id == worker.Id))
         {
             return Conflict("You are already signed up.");
         }
 
-        if (!profile.Qualifications.Any(q => q.Id == gig.Qualification.Id))
+        if (!worker.Qualifications.Any(q => q.Id == gig.Qualification.Id))
         {
             return Forbid();
         }
@@ -146,17 +146,17 @@ public class GigsController : ControllerBase
             return NotFound();
         }
 
-        var profile = await _db.Profiles
+        var worker = await _db.Workers
             .AsNoTracking()
-            .Include(p => p.Qualifications)
-            .SingleOrDefaultAsync(p => p.WorkerId == UserId);
+            .Include(w => w.Qualifications)
+            .SingleOrDefaultAsync(w => w.Id == UserId);
 
-        if (profile == null)
+        if (worker == null)
         {
-            return NotFound("Profile not found.");
+            return NotFound("Worker not found.");
         }
 
-        if (!gig.WorkerIds.Any(id => id == profile.WorkerId))
+        if (!gig.WorkerIds.Any(id => id == worker.Id))
         {
             return Conflict("You are not signed up.");
         }

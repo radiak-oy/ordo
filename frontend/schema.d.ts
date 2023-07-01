@@ -332,82 +332,6 @@ export interface paths {
       };
     };
   };
-  "/profiles": {
-    get: {
-      responses: {
-        /** @description Success */
-        200: {
-          content: {
-            "text/plain": (components["schemas"]["ProfileDto"])[];
-            "application/json": (components["schemas"]["ProfileDto"])[];
-            "text/json": (components["schemas"]["ProfileDto"])[];
-          };
-        };
-      };
-    };
-    post: {
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["CreateProfileDto"];
-          "text/json": components["schemas"]["CreateProfileDto"];
-          "application/*+json": components["schemas"]["CreateProfileDto"];
-        };
-      };
-      responses: {
-        /** @description Success */
-        200: {
-          content: {
-            "text/plain": components["schemas"]["ProfileDto"];
-            "application/json": components["schemas"]["ProfileDto"];
-            "text/json": components["schemas"]["ProfileDto"];
-          };
-        };
-      };
-    };
-  };
-  "/profiles/{workerId}": {
-    get: {
-      parameters: {
-        path: {
-          workerId: string;
-        };
-      };
-      responses: {
-        /** @description Success */
-        200: {
-          content: {
-            "text/plain": (components["schemas"]["ProfileDto"])[];
-            "application/json": (components["schemas"]["ProfileDto"])[];
-            "text/json": (components["schemas"]["ProfileDto"])[];
-          };
-        };
-      };
-    };
-    put: {
-      parameters: {
-        path: {
-          workerId: string;
-        };
-      };
-      requestBody?: {
-        content: {
-          "application/json": components["schemas"]["EditProfileDto"];
-          "text/json": components["schemas"]["EditProfileDto"];
-          "application/*+json": components["schemas"]["EditProfileDto"];
-        };
-      };
-      responses: {
-        /** @description Success */
-        200: {
-          content: {
-            "text/plain": components["schemas"]["ProfileDto"];
-            "application/json": components["schemas"]["ProfileDto"];
-            "text/json": components["schemas"]["ProfileDto"];
-          };
-        };
-      };
-    };
-  };
   "/qualifications": {
     get: {
       responses: {
@@ -422,13 +346,89 @@ export interface paths {
       };
     };
   };
+  "/workers": {
+    get: {
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "text/plain": (components["schemas"]["WorkerDto"])[];
+            "application/json": (components["schemas"]["WorkerDto"])[];
+            "text/json": (components["schemas"]["WorkerDto"])[];
+          };
+        };
+      };
+    };
+    post: {
+      requestBody?: {
+        content: {
+          "application/json": components["schemas"]["AddWorkerDto"];
+          "text/json": components["schemas"]["AddWorkerDto"];
+          "application/*+json": components["schemas"]["AddWorkerDto"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "text/plain": components["schemas"]["WorkerDto"];
+            "application/json": components["schemas"]["WorkerDto"];
+            "text/json": components["schemas"]["WorkerDto"];
+          };
+        };
+      };
+    };
+  };
+  "/workers/{id}": {
+    get: {
+      parameters: {
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "text/plain": (components["schemas"]["WorkerDto"])[];
+            "application/json": (components["schemas"]["WorkerDto"])[];
+            "text/json": (components["schemas"]["WorkerDto"])[];
+          };
+        };
+      };
+    };
+    put: {
+      parameters: {
+        path: {
+          id: string;
+        };
+      };
+      requestBody?: {
+        content: {
+          "application/json": components["schemas"]["EditWorkerDto"];
+          "text/json": components["schemas"]["EditWorkerDto"];
+          "application/*+json": components["schemas"]["EditWorkerDto"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "text/plain": components["schemas"]["WorkerDto"];
+            "application/json": components["schemas"]["WorkerDto"];
+            "text/json": components["schemas"]["WorkerDto"];
+          };
+        };
+      };
+    };
+  };
 }
 
 export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
-    CreateProfileDto: {
+    AddWorkerDto: {
       email: string;
       name: string;
       qualificationIds: (string)[];
@@ -454,7 +454,7 @@ export interface components {
       maxWorkers: number;
       workerIds: (string)[];
     };
-    EditProfileDto: {
+    EditWorkerDto: {
       name: string;
       qualificationIds: (string)[];
       notes: string;
@@ -493,12 +493,6 @@ export interface components {
       /** Format: int32 */
       maxWorkers: number;
     };
-    ProfileDto: {
-      workerId: string;
-      name: string;
-      qualifications: (components["schemas"]["QualificationDto"])[];
-      notes: string;
-    };
     QualificationDto: {
       id: string;
       name: string;
@@ -507,6 +501,7 @@ export interface components {
       email: string;
     };
     ResetPasswordDto: {
+      userId: string;
       token: string;
       newPassword: string;
     };
@@ -525,6 +520,12 @@ export interface components {
       id: string;
       userName?: string | null;
       roles: (string)[];
+    };
+    WorkerDto: {
+      id: string;
+      name: string;
+      qualifications: (components["schemas"]["QualificationDto"])[];
+      notes: string;
     };
   };
   responses: never;

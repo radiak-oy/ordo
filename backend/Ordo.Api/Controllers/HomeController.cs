@@ -121,15 +121,15 @@ public class HomeController : ControllerBase
 
             if (await _userManager.IsInRoleAsync(user, RoleNames.Worker))
             {
-                var profile = new Profile
+                var workerNew = new Worker
                 {
-                    WorkerId = user.Id,
+                    Id = user.Id,
                     Name = idTokenPayload.Name,
                     Qualifications = new List<Qualification>(),
                     Notes = $"Kirjautui sisään Googlen kautta. Sähköpostiosoite: {idTokenPayload.Email}",
                 };
 
-                await _db.Profiles.AddAsync(profile);
+                await _db.Workers.AddAsync(workerNew);
                 await _db.SaveChangesAsync();
             }
         }

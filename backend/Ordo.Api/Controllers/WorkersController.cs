@@ -11,15 +11,15 @@ using Ordo.Api.Services;
 namespace Ordo.Api.Controllers;
 
 [Authorize(Roles = RoleNames.Manager)]
-[Route("profiles")]
+[Route("workers")]
 [ApiController]
-public class ProfilesController : ControllerBase
+public class WorkersController : ControllerBase
 {
     private readonly ApplicationDbContext _db;
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IMailService _mailService;
 
-    public ProfilesController(ApplicationDbContext db, UserManager<IdentityUser> userManager, IMailService mailService)
+    public WorkersController(ApplicationDbContext db, UserManager<IdentityUser> userManager, IMailService mailService)
     {
         _db = db;
         _userManager = userManager;
@@ -27,7 +27,7 @@ public class ProfilesController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<ProfileDto>> Create(CreateProfileDto dto)
+    public async Task<ActionResult<WorkerDto>> Add(AddWorkerDto dto)
     {
         if (await _userManager.FindByEmailAsync(dto.Email) != null)
         {
@@ -57,15 +57,15 @@ public class ProfilesController : ControllerBase
             return BadRequest("One or more qualifications is invalid.");
         }
 
-        var profile = new Profile
+        var worker = new Worker
         {
-            WorkerId = user.Id,
+            Id = user.Id,
             Name = dto.Name,
             Notes = dto.Notes,
             Qualifications = qualifications
         };
 
-        await _db.Profiles.AddAsync(profile);
+        await _db.Workers.AddAsync(worker);
         await _db.SaveChangesAsync();
 
         // await _mailService.SendEmailAsync(new MailRequest
@@ -75,36 +75,36 @@ public class ProfilesController : ControllerBase
         //     Body = "Tämä on testi",
         // });
 
-        return Ok(ProfileDto.FromModel(profile));
+        return Ok(WorkerDto.FromModel(worker));
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ProfileDto>>> GetAll()
+    public async Task<ActionResult<IEnumerable<WorkerDto>>> GetAll()
     {
-        var profiles = await _db.Profiles.AsNoTracking().Include(p => p.Qualifications).OrderBy(p => p.Name).ToListAsync();
+        var workers = await _db.Workers.AsNoTracking().Include(w => w.Qualifications).OrderBy(w => w.Name).ToListAsync();
 
-        return Ok(profiles.Select(ProfileDto.FromModel));
+        return Ok(workers.Select(WorkerDto.FromModel));
     }
 
-    [HttpGet("{workerId}")]
-    public async Task<ActionResult<IEnumerable<ProfileDto>>> Get(Guid workerId)
+    [HttpGet("{id}")]
+    public async Task<ActionResult<IEnumerable<WorkerDto>>> Get(Guid id)
     {
-        var profile = await _db.Profiles.AsNoTracking().Include(p => p.Qualifications).SingleOrDefaultAsync(p => p.WorkerId == workerId.ToString());
+        var worker = await _db.Workers.AsNoTracking().Include(w => w.Qualifications).SingleOrDefaultAsync(w => w.Id == id.ToString());
 
-        if (profile == null)
+        if (worker == null)
         {
             return NotFound();
         }
 
-        return Ok(ProfileDto.FromModel(profile));
+        return Ok(WorkerDto.FromModel(worker));
     }
 
-    [HttpPut("{workerId}")]
-    public async Task<ActionResult<ProfileDto>> Edit(Guid workerId, [FromBody] EditProfileDto dto)
+    [HttpPut("{id}")]
+    public async Task<ActionResult<WorkerDto>> Edit(Guid id, [FromBody] EditWorkerDto dto)
     {
-        var profile = await _db.Profiles.Include(p => p.Qualifications).SingleOrDefaultAsync(p => p.WorkerId == workerId.ToString());
+        var worker = await _db.Workers.Include(w => w.Qualifications).SingleOrDefaultAsync(w => w.Id == id.ToString());
 
-        if (profile == null)
+        if (worker == null)
         {
             return NotFound();
         }
@@ -115,12 +115,12 @@ public class ProfilesController : ControllerBase
             return BadRequest("One or more invalid qualification IDs.");
         }
 
-        profile.Name = dto.Name;
-        profile.Qualifications = qualifications;
-        profile.Notes = dto.Notes;
+        worker.Name = dto.Name;
+        worker.Qualifications = qualifications;
+        worker.Notes = dto.Notes;
 
         await _db.SaveChangesAsync();
 
-        return Ok(ProfileDto.FromModel(profile));
+        return Ok(WorkerDto.FromModel(worker));
     }
 }
