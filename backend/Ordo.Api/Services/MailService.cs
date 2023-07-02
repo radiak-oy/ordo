@@ -10,10 +10,12 @@ namespace Ordo.Api.Services;
 public class MailService : IMailService
 {
     private readonly MailOptions _options;
+    private readonly ILogger _logger;
 
-    public MailService(IOptions<MailOptions> options)
+    public MailService(IOptions<MailOptions> options, ILogger<MailService> logger)
     {
         _options = options.Value;
+        _logger = logger;
     }
 
     public async Task SendEmailAsync(MailRequest mailRequest)
@@ -59,5 +61,7 @@ public class MailService : IMailService
         await smtp.SendAsync(email);
 
         await smtp.DisconnectAsync(true);
+
+        _logger.LogInformation("Sent an email to {email}.", mailRequest.ToEmail);
     }
 }
