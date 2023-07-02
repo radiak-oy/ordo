@@ -18,13 +18,18 @@ public class MailService : IMailService
 
     public async Task SendEmailAsync(MailRequest mailRequest)
     {
-        var email = new MimeMessage();
+        var email = new MimeMessage
+        {
+            Sender = MailboxAddress.Parse(_options.Address),
+            Subject = mailRequest.Subject,
+        };
 
-        email.Sender = MailboxAddress.Parse(_options.Address);
         email.To.Add(MailboxAddress.Parse(mailRequest.ToEmail));
-        email.Subject = mailRequest.Subject;
 
-        var builder = new BodyBuilder();
+        var builder = new BodyBuilder
+        {
+            HtmlBody = mailRequest.Body
+        };
 
         if (mailRequest.Attachments != null)
         {
@@ -44,7 +49,6 @@ public class MailService : IMailService
             }
         }
 
-        builder.HtmlBody = mailRequest.Body;
         email.Body = builder.ToMessageBody();
 
         using var smtp = new SmtpClient();
@@ -54,6 +58,6 @@ public class MailService : IMailService
 
         await smtp.SendAsync(email);
 
-        smtp.Disconnect(true);
+        await smtp.DisconnectAsync(true);
     }
 }
