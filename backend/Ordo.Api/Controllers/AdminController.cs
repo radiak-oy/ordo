@@ -28,9 +28,9 @@ public class AdminController : ControllerBase
     }
 
     [HttpPost("users")]
-    public async Task<IActionResult> CreateUserAsync(string role, string username, string? password)
+    public async Task<IActionResult> CreateUserAsync(string role, string email, string? password)
     {
-        var user = new IdentityUser { UserName = username };
+        var user = new IdentityUser { UserName = email, Email = email };
         var resultCreateUser = password != null
             ? await _userManager.CreateAsync(user, password)
             : await _userManager.CreateAsync(user);
