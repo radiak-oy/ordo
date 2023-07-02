@@ -46,11 +46,11 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center">
-      <div className="m-auto flex flex-col items-center">
+    <div className="min-h-screen flex justify-center items-center">
+      <div className="flex flex-col items-center">
         <Logo />
         <form
-          className="mt-4 p-4 m-auto max-w-xs flex flex-col rounded border bg-secondary-50"
+          className="mt-4 p-4 m-auto max-w flex flex-col rounded border bg-secondary-50"
           onSubmit={onSubmit}
         >
           <button
@@ -58,14 +58,25 @@ export default function Login() {
             className="mb-2 w-full btn-primary"
             onClick={loginGoogle}
           >
-            Google
+            <svg
+              className="mr-2 w-4 h-4"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 512 512"
+            >
+              <path
+                fill="currentColor"
+                d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"
+              ></path>
+            </svg>
+            <span>Kirjaudu Google-tilillä</span>
           </button>
 
           <div className="my-2 flex items-center">
             <div className="grow h-0.5 bg-secondary-300"></div>
-            <span className="px-2 text-sm">tai</span>
+            <span className="px-2 text-sm text-secondary-700">tai</span>
             <div className="grow h-0.5 bg-secondary-300"></div>
           </div>
+
           <label htmlFor="input-email">Sähköpostiosoite</label>
           <input
             id="input-email"
@@ -88,16 +99,18 @@ export default function Login() {
 
           <a
             href="/forgot-password"
-            className="mb-4 underline underline-offset-4 text-blue-500"
+            className="mb-4 underline underline-offset-4 text-blue-500 hover:text-blue-600"
           >
             Unohditko salasanasi?
           </a>
 
-          <button type="submit" className="mb-2 w-full btn-primary">
+          <button type="submit" className="w-full btn-primary">
             Kirjaudu sisään
           </button>
 
-          <span className="text-red-500">{errorMessage}</span>
+          {errorMessage.length > 0 && (
+            <span className="mt-2 text-red-500">{errorMessage}</span>
+          )}
         </form>
       </div>
     </div>

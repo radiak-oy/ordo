@@ -1,3 +1,4 @@
+using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -18,12 +19,14 @@ public class WorkersController : ControllerBase
     private readonly ApplicationDbContext _db;
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IMailService _mailService;
+    private readonly IConfiguration _configuration;
 
-    public WorkersController(ApplicationDbContext db, UserManager<IdentityUser> userManager, IMailService mailService)
+    public WorkersController(ApplicationDbContext db, UserManager<IdentityUser> userManager, IMailService mailService, IConfiguration configuration)
     {
         _db = db;
         _userManager = userManager;
         _mailService = mailService;
+        _configuration = configuration;
     }
 
     [HttpPost]
@@ -68,12 +71,15 @@ public class WorkersController : ControllerBase
         await _db.Workers.AddAsync(worker);
         await _db.SaveChangesAsync();
 
-        // await _mailService.SendEmailAsync(new MailRequest
-        // {
-        //     ToEmail = user.Email!,
-        //     Subject = "Tunnuksesi Ordo-palveluun",
-        //     Body = "Tämä on testi",
-        // });
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+        var url = $"{_configuration["Domain"]}/reset-password?userId={UrlEncoder.Default.Encode(user.Id)}&token={UrlEncoder.Default.Encode(token)}";
+
+        await _mailService.SendEmailAsync(new MailRequest
+        {
+            ToEmail = user.Email!,
+            Subject = "[Ordo] Luo salasanasi",
+            Body = $"Hei,<br /><br />pääset luomaan itsellesi salasanan alla olevasta linkistä.<br /><br /><a href=\"{url}\">Luo salasanasi painamalla tästä.</a><br /><br />Linkki on voimassa yhden vuorokauden.",
+        });
 
         return Ok(WorkerDto.FromModel(worker));
     }

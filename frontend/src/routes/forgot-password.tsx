@@ -29,16 +29,14 @@ export default function ForgotPassword() {
   return (
     <div className="min-h-screen flex justify-center items-center">
       <div className="flex flex-col items-start">
-        <div className="w-full flex justify-start">
-          <button
-            type="button"
-            className="mb-4 btn-secondary"
-            onClick={() => navigate(-1)}
-          >
-            <MdArrowBack className="mr-1" />
-            Takaisin
-          </button>
-        </div>
+        <button
+          type="button"
+          className="mb-4 btn-secondary"
+          onClick={() => navigate(-1)}
+        >
+          <MdArrowBack className="mr-1" />
+          Takaisin
+        </button>
         <form
           className="p-4 max-w-xs flex flex-col rounded border"
           onSubmit={onSubmit}

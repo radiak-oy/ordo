@@ -51,12 +51,6 @@ builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
     options.TokenLifespan = TimeSpan.FromDays(1);
 });
 
-// builder.Services.AddAuthentication().AddCookie().AddGoogle(options =>
-// {
-//     options.ClientId = builder.Configuration["Authentication:Google:ClientId"] ?? throw new InvalidOperationException();
-//     options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"] ?? throw new InvalidOperationException();
-// });
-
 builder.Services.AddAuthorization(authzOptions =>
 {
     authzOptions.AddPolicy(PolicyNames.RequireAdminToken, policy => policy.AddRequirements(new AdminTokenRequirement(builder.Configuration["AdminKey"])));

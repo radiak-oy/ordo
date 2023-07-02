@@ -100,12 +100,13 @@ export default function ResetPassword() {
             </a>
           </>
         ) : (
-          <button type="submit" className="mt-4 btn-primary">
+          <button type="submit" className="mt-2 btn-primary">
             Vaihda salasana
           </button>
         )}
+
         {errorMessage.length > 0 && (
-          <span className="text-red-500">{errorMessage}</span>
+          <span className="mt-2 text-red-500">{errorMessage}</span>
         )}
       </form>
     </div>

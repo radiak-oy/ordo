@@ -83,55 +83,16 @@ public class HomeController : ControllerBase
         var tokenResponse = await authzCodeFlow.ExchangeCodeForTokenAsync(
             Guid.NewGuid().ToString(),
             dto.Code,
-            redirectUri: _configuration["WebBaseUrl"],
+            redirectUri: _configuration["Domain"],
             CancellationToken.None);
 
         var idTokenPayload = await GoogleJsonWebSignature.ValidateAsync(tokenResponse.IdToken);
-
-        var externalUserRecord = await _db.ExternalUsers.SingleOrDefaultAsync(x => x.Email == idTokenPayload.Email);
-
-        if (externalUserRecord == null)
-        {
-            return Unauthorized();
-        }
 
         var user = await _userManager.FindByEmailAsync(idTokenPayload.Email);
 
         if (user == null)
         {
-            var resultCreateUser = await _userManager.CreateAsync(new IdentityUser
-            {
-                UserName = idTokenPayload.Email,
-                Email = idTokenPayload.Email,
-            });
-
-            if (!resultCreateUser.Succeeded)
-            {
-                return BadRequest(resultCreateUser.Errors);
-            }
-
-            user = await _userManager.FindByEmailAsync(idTokenPayload.Email) ?? throw new InvalidOperationException();
-
-            var resultAddToRole = await _userManager.AddToRoleAsync(user, externalUserRecord.Role);
-
-            if (!resultAddToRole.Succeeded)
-            {
-                throw new InvalidOperationException(resultAddToRole.Errors.ToString());
-            }
-
-            if (await _userManager.IsInRoleAsync(user, RoleNames.Worker))
-            {
-                var workerNew = new Worker
-                {
-                    Id = user.Id,
-                    Name = idTokenPayload.Name,
-                    Qualifications = new List<Qualification>(),
-                    Notes = $"Kirjautui sisään Googlen kautta. Sähköpostiosoite: {idTokenPayload.Email}",
-                };
-
-                await _db.Workers.AddAsync(workerNew);
-                await _db.SaveChangesAsync();
-            }
+            return Unauthorized();
         }
 
         await _signInManager.SignInAsync(user, isPersistent: true);
@@ -166,21 +127,15 @@ public class HomeController : ControllerBase
             return NoContent();
         }
 
-        // prevent external (e.g. google) users from setting a password (for now)
-        if (await _db.ExternalUsers.AnyAsync(x => x.Email == user.Email))
-        {
-            return NoContent();
-        }
-
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
-        var url = $"{_configuration["WebBaseUrl"]}/reset-password?userId={UrlEncoder.Default.Encode(user.Id)}&token={UrlEncoder.Default.Encode(token)}";
+        var url = $"{_configuration["Domain"]}/reset-password?userId={UrlEncoder.Default.Encode(user.Id)}&token={UrlEncoder.Default.Encode(token)}";
 
         await _mailService.SendEmailAsync(new MailRequest
         {
             ToEmail = user.Email!,
             Subject = "[Ordo] Vaihda salasanasi",
-            Body = $"Hei,<br /><br /><a href=\"{url}\">Pääset vaihtamaan salasanasi painamalla tästä</a><br /><br />Linkki on voimassa yhden vuorokauden.",
+            Body = $"Hei,<br /><br />pääset vaihtamaan salasanasi alla olevasta linkistä.<br /><br /><a href=\"{url}\">Vaihda salasanasi painamalla tästä.</a><br /><br />Linkki on voimassa yhden vuorokauden.",
         });
 
         return NoContent();

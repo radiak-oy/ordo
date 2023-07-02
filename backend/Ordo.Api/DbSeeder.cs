@@ -104,23 +104,6 @@ public class DbSeeder : IHostedService
 
                 await db.SaveChangesAsync();
             }
-
-            if (!db.ExternalUsers.Any())
-            {
-                await db.ExternalUsers.AddAsync(new ExternalUser()
-                {
-                    Email = "aarojkarell@gmail.com",
-                    Role = RoleNames.Worker
-                });
-
-                await db.ExternalUsers.AddAsync(new ExternalUser()
-                {
-                    Email = "admin@radiak.fi",
-                    Role = RoleNames.Manager
-                });
-
-                await db.SaveChangesAsync();
-            }
         }
     }
 
