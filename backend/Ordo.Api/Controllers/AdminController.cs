@@ -161,6 +161,14 @@ public class AdminController : ControllerBase
             return NotFound("User not found.");
         }
 
+        var worker = await _db.Workers.SingleOrDefaultAsync(w => w.Id == user.Id);
+
+        if (worker != null)
+        {
+            _db.Workers.Remove(worker);
+            await _db.SaveChangesAsync();
+        }
+
         await _userManager.DeleteAsync(user);
         return NoContent();
     }
