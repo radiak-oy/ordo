@@ -9,15 +9,15 @@ import { MdAdd, MdArrowBack, MdSave } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import Selector from './Selector';
 
-interface ProfileUpsertFormProps {
+interface WorkerUpsertFormProps {
   qualifications: QualificationDto[];
   workerToEdit: WorkerDto | null;
 }
 
-export default function ProfileUpsertForm({
+export default function WorkerUpsertForm({
   qualifications,
   workerToEdit,
-}: ProfileUpsertFormProps) {
+}: WorkerUpsertFormProps) {
   const isCreateMode = workerToEdit == null;
   const navigate = useNavigate();
   const { addWorker, editWorker } = createApi();
@@ -29,10 +29,14 @@ export default function ProfileUpsertForm({
   >(workerToEdit?.qualifications.map((q) => q.id) ?? []);
   const [notes, setNotes] = useState(workerToEdit?.notes ?? '');
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const [errorMessage, setErrorMessage] = useState('');
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    setIsLoading(true);
 
     const result =
       workerToEdit != null
@@ -47,6 +51,8 @@ export default function ProfileUpsertForm({
             qualificationIds: qualificationIdsSelected,
             notes,
           } as AddWorkerDto);
+
+    setIsLoading(false);
 
     if (!result.ok) {
       setErrorMessage(result.errorMessage);
@@ -118,7 +124,20 @@ export default function ProfileUpsertForm({
           onChange={(e) => setNotes(e.target.value)}
         />
 
-        <button type="submit" className="mt-2 btn-primary">
+        {isCreateMode && (
+          <>
+            <span className="mb-1 text-secondary-700">
+              Kun lisäät henkilön, hän saa linkin sähköpostiosoitteeseensa,
+              jonka kautta hän voi luoda itselleen salasanan.
+            </span>
+            <span className="text-secondary-700">
+              Jatkossa hän voi kirjautua tällä salasanalla (tai Googlen kautta,
+              jos sähköpostiosoite on Google-tilin osoite).
+            </span>
+          </>
+        )}
+
+        <button type="submit" className="mt-2 btn-primary" disabled={isLoading}>
           {isCreateMode ? (
             <>
               <MdAdd className="mr-1" />
@@ -132,7 +151,9 @@ export default function ProfileUpsertForm({
           )}
         </button>
 
-        <span className="text-red-500">{errorMessage}</span>
+        {errorMessage.length > 0 && (
+          <span className="mt-2 text-red-500">{errorMessage}</span>
+        )}
       </form>
     </>
   );

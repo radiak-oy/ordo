@@ -4,8 +4,8 @@ import Logo from '../../ui/Logo';
 
 export default function Root() {
   return (
-    <div className="min-h-screen">
-      <div className="mx-auto px-4 py-2 max-w-xl flex justify-between items-center">
+    <div className="mx-auto min-h-screen max-w-xl flex flex-col">
+      <div className="px-4 py-2 flex justify-between items-center">
         <div className="flex items-center">
           <Logo />
           <NavLink
@@ -31,7 +31,7 @@ export default function Root() {
         </NavLink>
       </div>
       <hr />
-      <div className="mx-auto p-4 max-w-xl">
+      <div className="p-4">
         <Outlet />
       </div>
     </div>
