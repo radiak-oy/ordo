@@ -134,7 +134,10 @@ export default function GigUpsertForm({
           required
           className="mb-2"
           value={format(startDateTime, "yyyy-MM-dd'T'HH:mm")}
-          onChange={(e) => setStartDateTime(new Date(e.target.value))}
+          onChange={(e) =>
+            e.target.validity.valid &&
+            setStartDateTime(new Date(e.target.value))
+          }
           min={isPostMode ? new Date().toISOString().slice(0, -8) : undefined}
         />
 
@@ -145,7 +148,9 @@ export default function GigUpsertForm({
           required
           className="mb-2"
           value={format(endDateTime, "yyyy-MM-dd'T'HH:mm")}
-          onChange={(e) => setEndDateTime(new Date(e.target.value))}
+          onChange={(e) =>
+            e.target.validity.valid && setEndDateTime(new Date(e.target.value))
+          }
           min={
             isPostMode ? format(startDateTime, "yyyy-MM-dd'T'HH:mm") : undefined
           }
@@ -170,7 +175,9 @@ export default function GigUpsertForm({
           step={1}
           className="mb-2"
           value={maxWorkers}
-          onChange={(e) => setMaxWorkers(parseInt(e.target.value))}
+          onChange={(e) =>
+            e.target.validity.valid && setMaxWorkers(parseInt(e.target.value))
+          }
         />
 
         {workers && !isPostMode && (
