@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -54,9 +55,15 @@ builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
 builder.Services.AddAuthorization(authzOptions =>
 {
     authzOptions.AddPolicy(PolicyNames.RequireAdminToken, policy => policy.AddRequirements(new AdminTokenRequirement(builder.Configuration["AdminKey"])));
+    authzOptions.AddPolicy(PolicyNames.RequireResourceAccess, policy =>
+    {
+        policy.AddRequirements(new OperationAuthorizationRequirement());
+        policy.RequireAuthenticatedUser();
+    });
 });
 
 builder.Services.AddSingleton<IAuthorizationHandler, AdminTokenAuthorizationHandler>();
+builder.Services.AddScoped<IAuthorizationHandler, GigAuthorizationHandler>();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {

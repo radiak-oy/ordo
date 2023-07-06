@@ -14,13 +14,15 @@ namespace Ordo.Api.Controllers;
 public class GigsController : ControllerBase
 {
     private readonly ApplicationDbContext _db;
+    private readonly IAuthorizationService _authz;
 
     private string UserId => User.FindFirstValue(ClaimTypes.NameIdentifier) ??
         throw new InvalidOperationException("User ID is missing");
 
-    public GigsController(ApplicationDbContext db)
+    public GigsController(ApplicationDbContext db, IAuthorizationService authz)
     {
         _db = db;
+        _authz = authz;
     }
 
     [HttpGet("done")]
@@ -102,24 +104,15 @@ public class GigsController : ControllerBase
             return NotFound();
         }
 
-        var worker = await _db.Workers
-            .AsNoTracking()
-            .Include(w => w.Qualifications)
-            .SingleOrDefaultAsync(w => w.Id == UserId);
-
-        if (worker == null)
+        var authzResult = await _authz.AuthorizeAsync(User, gig, PolicyNames.RequireResourceAccess);
+        if (!authzResult.Succeeded)
         {
-            return NotFound("Worker not found.");
+            return NotFound();
         }
 
-        if (gig.WorkerIds.Any(id => id == worker.Id))
+        if (gig.WorkerIds.Any(id => id == UserId))
         {
             return Conflict("You are already signed up.");
-        }
-
-        if (!worker.Qualifications.Any(q => q.Id == gig.Qualification.Id))
-        {
-            return Forbid();
         }
 
         if (gig.WorkerIds.Count == gig.MaxWorkers)
@@ -146,17 +139,13 @@ public class GigsController : ControllerBase
             return NotFound();
         }
 
-        var worker = await _db.Workers
-            .AsNoTracking()
-            .Include(w => w.Qualifications)
-            .SingleOrDefaultAsync(w => w.Id == UserId);
-
-        if (worker == null)
+        var authzResult = await _authz.AuthorizeAsync(User, gig, PolicyNames.RequireResourceAccess);
+        if (!authzResult.Succeeded)
         {
-            return NotFound("Worker not found.");
+            return NotFound();
         }
 
-        if (!gig.WorkerIds.Any(id => id == worker.Id))
+        if (!gig.WorkerIds.Any(id => id == UserId))
         {
             return Conflict("You are not signed up.");
         }
@@ -190,7 +179,10 @@ public class GigsController : ControllerBase
             .Include(g => g.Qualification)
             .SingleOrDefaultAsync(g => g.Id == id);
 
-        if (gig == null) return NotFound();
+        if (gig == null)
+        {
+            return NotFound();
+        }
 
         return Ok(gig);
     }
