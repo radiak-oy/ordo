@@ -10,6 +10,7 @@ interface SelectorProps {
   options: {
     id: string;
     name: string;
+    href?: string;
   }[];
   onChange: (selectedIds: string[]) => void;
 }
@@ -38,25 +39,36 @@ export default function Selector({
     onChange(newIds);
   }
 
+  const selectedOptions = useMemo(
+    () => selectedIds.map((id) => options.find((o) => o.id === id)!),
+    [options, selectedIds]
+  );
+
   return (
     <div className="flex">
       <div className="mr-4 flex flex-col items-start">
         <span>{title}</span>
         <div className="mb-1 flex flex-col">
           {selectedIds.length === 0 && <span>{noneTitle}</span>}
-          {selectedIds.map((id) => (
+          {selectedOptions.map((o) => (
             <div
-              key={id}
+              key={o.id}
               className="mb-1 p-2 flex justify-between rounded border border-secondary-300"
             >
-              <span className="mr-4">
-                {options.find((o) => o.id === id)?.name}
-              </span>
+              <a
+                href={o.href}
+                className={`mr-4 ${
+                  o.href ? 'hover:underline underline-offset-4' : ''
+                }`}
+              >
+                {o.name}
+              </a>
               <button
                 type="button"
+                className="text-secondary-700 hover:text-secondary-800"
                 onClick={() => {
                   const newIds = selectedIds.filter(
-                    (selectedId) => selectedId !== id
+                    (selectedId) => selectedId !== o.id
                   );
                   onChange(newIds);
                 }}

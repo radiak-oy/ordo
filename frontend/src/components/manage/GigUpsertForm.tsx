@@ -231,6 +231,7 @@ export default function GigUpsertForm({
               .map((w) => ({
                 id: w.id,
                 name: w.name,
+                href: `/manage/staff/${w.id}`,
               }))}
             selectedIds={workerIdsSelected}
             onChange={(newIds) => setWorkerIdsSelected(newIds)}
