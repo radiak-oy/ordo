@@ -58,8 +58,8 @@ public class DbSeeder : IHostedService
 
                 await userManager.AddToRoleAsync(manager, RoleNames.Manager);
 
-                await userManager.CreateAsync(new IdentityUser { Email = emailAaro, UserName = emailAaro }, "aaro");
-                await userManager.CreateAsync(new IdentityUser { Email = emailMatti, UserName = emailMatti }, "matti");
+                await userManager.CreateAsync(new IdentityUser { Email = emailAaro, UserName = emailAaro }, "aaroka");
+                await userManager.CreateAsync(new IdentityUser { Email = emailMatti, UserName = emailMatti }, "mattita");
 
                 var aaro = await userManager.FindByEmailAsync(emailAaro) ?? throw new InvalidOperationException();
                 var matti = await userManager.FindByNameAsync(emailMatti) ?? throw new InvalidOperationException();

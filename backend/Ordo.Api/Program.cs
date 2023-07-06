@@ -37,8 +37,7 @@ builder.Services.AddSwaggerGen();
 builder.Services
     .AddIdentity<IdentityUser, IdentityRole>(options =>
     {
-        // TODO: CHANGE
-        options.Password.RequiredLength = 4;
+        options.Password.RequiredLength = 6;
         options.Password.RequireDigit = false;
         options.Password.RequireLowercase = false;
         options.Password.RequireNonAlphanumeric = false;

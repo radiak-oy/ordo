@@ -57,7 +57,7 @@ export default function ResetPassword() {
           id="input-password"
           type={showPassword ? 'text' : 'password'}
           required
-          minLength={4}
+          minLength={6}
           className="mb-2"
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
