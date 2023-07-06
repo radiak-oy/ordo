@@ -32,8 +32,10 @@ export default function Done() {
           timesheetEntry={timesheetEntries.find((t) => t.gigId === gig.id)}
         />
       ))}
-      <span className="mb-2 font-semibold">Suorittamani keikat</span>
-      {gigsPast.length === 0 && <span>Et ole suorittanut keikkoja.</span>}
+      <span className="mb-2 font-semibold">Menneet keikat</span>
+      {gigsPast.length === 0 && (
+        <span>Et ole vielä osallistunut keikkoihin.</span>
+      )}
       {gigsPast.map((gig) => (
         <GigDone
           key={gig.id}

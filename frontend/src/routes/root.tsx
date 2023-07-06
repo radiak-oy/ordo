@@ -14,13 +14,13 @@ export default function Root() {
               `ml-6 mr-4 p-2 ${isActive ? 'font-bold' : ''}`
             }
           >
-            Keikat
+            Tulevat
           </NavLink>
           <NavLink
             to="gigs/done"
             className={({ isActive }) => `p-2 ${isActive ? 'font-bold' : ''}`}
           >
-            Historia
+            Menneet
           </NavLink>
         </div>
         <NavLink

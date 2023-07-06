@@ -35,7 +35,7 @@ export default function Timesheet({ timesheetEntries }: TimesheetProps) {
           <tr>
             <th className="text-start font-medium">Päivämäärä</th>
             <th className="text-start font-medium">Työtunnit</th>
-            <th className="text-start font-medium">Tila</th>
+            <th className="text-start font-medium">Hyväksytty?</th>
           </tr>
         </thead>
         <tbody>

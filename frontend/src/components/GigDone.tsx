@@ -81,7 +81,7 @@ export default function GigDone({
     return date;
   }
 
-  async function confirmWorkHours(e: React.FormEvent) {
+  async function uploadWorkHours(e: React.FormEvent) {
     e.preventDefault();
 
     setErrorMessage('');
@@ -164,7 +164,7 @@ export default function GigDone({
       <GigInfo gig={gig} />
       <form
         className="mt-2 flex flex-col items-start"
-        onSubmit={confirmWorkHours}
+        onSubmit={uploadWorkHours}
       >
         <span>Työtunnit</span>
         <div className="flex">
@@ -190,11 +190,13 @@ export default function GigDone({
         {(state === 'adding' || state === 'editing') && (
           <button
             type="button"
-            className="mt-2 !py-1 btn-primary"
-            onClick={confirmWorkHours}
+            className={`mt-2 !py-1 ${
+              isOngoing ? 'btn-primary-outline' : 'btn-primary'
+            }`}
+            onClick={uploadWorkHours}
           >
             <MdCheck className="mr-2" />
-            Vahvista työtunnit
+            Kirjaa työtunnit
           </button>
         )}
 
@@ -212,7 +214,10 @@ export default function GigDone({
         )}
 
         {state === 'confirmed' && (
-          <span className="mt-1 text-secondary-700">Hyväksytty.</span>
+          <div className="mt-1 flex items-center text-secondary-700">
+            <MdCheck className="mr-2" />
+            Työnantaja on hyväksynyt työtuntisi.
+          </div>
         )}
 
         {errorMessage.length > 0 && (
