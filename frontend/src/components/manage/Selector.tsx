@@ -1,17 +1,19 @@
 import { useMemo } from 'react';
 import { MdClose } from 'react-icons/md';
 
+interface Option {
+  id: string;
+  name: string;
+  href?: string;
+}
+
 interface SelectorProps {
   title: string;
   addTitle: string;
   noneTitle: string;
   max?: number;
   selectedIds: string[];
-  options: {
-    id: string;
-    name: string;
-    href?: string;
-  }[];
+  options: Option[];
   onChange: (selectedIds: string[]) => void;
 }
 
@@ -40,7 +42,7 @@ export default function Selector({
   }
 
   const selectedOptions = useMemo(
-    () => selectedIds.map((id) => options.find((o) => o.id === id)!),
+    () => options.filter((o) => selectedIds.some((id) => id == o.id)),
     [options, selectedIds]
   );
 

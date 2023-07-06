@@ -1,4 +1,3 @@
-import { differenceInCalendarDays, format } from 'date-fns';
 import { GigDto } from '../../api';
 import GigInfo from '../GigInfo';
 

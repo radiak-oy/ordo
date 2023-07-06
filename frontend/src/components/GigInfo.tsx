@@ -1,6 +1,6 @@
 import { differenceInCalendarDays, format } from 'date-fns';
 import { DoneGigDto, GigDto, UpcomingGigDto } from '../api';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export default function GigInfo({
   className,
