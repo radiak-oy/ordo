@@ -63,8 +63,8 @@ public class WorkersController : ControllerBase
         var worker = new Worker
         {
             Id = user.Id,
-            Name = dto.Name,
-            Notes = dto.Notes,
+            Name = dto.Name.Trim(),
+            Notes = dto.Notes.Trim(),
             Qualifications = qualifications
         };
 
@@ -87,7 +87,11 @@ public class WorkersController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<WorkerDto>>> GetAll()
     {
-        var workers = await _db.Workers.AsNoTracking().Include(w => w.Qualifications).OrderBy(w => w.Name).ToListAsync();
+        var workers = await _db.Workers
+            .AsNoTracking()
+            .Include(w => w.Qualifications)
+            .OrderBy(w => w.Name)
+            .ToListAsync();
 
         return Ok(workers.Select(WorkerDto.FromModel));
     }
@@ -95,7 +99,10 @@ public class WorkersController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<IEnumerable<WorkerDto>>> Get(Guid id)
     {
-        var worker = await _db.Workers.AsNoTracking().Include(w => w.Qualifications).SingleOrDefaultAsync(w => w.Id == id.ToString());
+        var worker = await _db.Workers
+            .AsNoTracking()
+            .Include(w => w.Qualifications)
+            .SingleOrDefaultAsync(w => w.Id == id.ToString());
 
         if (worker == null)
         {
@@ -108,22 +115,28 @@ public class WorkersController : ControllerBase
     [HttpPut("{id}")]
     public async Task<ActionResult<WorkerDto>> Edit(Guid id, [FromBody] EditWorkerDto dto)
     {
-        var worker = await _db.Workers.Include(w => w.Qualifications).SingleOrDefaultAsync(w => w.Id == id.ToString());
+        var worker = await _db.Workers
+            .Include(w => w.Qualifications)
+            .SingleOrDefaultAsync(w => w.Id == id.ToString());
 
         if (worker == null)
         {
             return NotFound();
         }
 
-        var qualifications = await _db.Qualifications.Where(q => dto.QualificationIds.ToList().Contains(q.Id.ToString())).ToListAsync();
+        var qualifications = await _db.Qualifications
+            .Where(q => dto.QualificationIds.ToList()
+            .Contains(q.Id.ToString()))
+            .ToListAsync();
+
         if (qualifications.Count != dto.QualificationIds.Length)
         {
             return BadRequest("One or more invalid qualification IDs.");
         }
 
-        worker.Name = dto.Name;
+        worker.Name = dto.Name.Trim();
         worker.Qualifications = qualifications;
-        worker.Notes = dto.Notes;
+        worker.Notes = dto.Notes.Trim();
 
         await _db.SaveChangesAsync();
 

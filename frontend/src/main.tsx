@@ -20,7 +20,13 @@ import Staff from './routes/manage/staff';
 import StaffEdit from './routes/manage/staff/edit';
 import GigsUpcoming from './routes/gigs/upcoming';
 import GigsDone from './routes/gigs/done';
-import createApi, { GigDto, WorkerDto, QualificationDto } from './api';
+import createApi, {
+  GigDto,
+  WorkerDto,
+  QualificationDto,
+  DoneGigDto,
+  TimesheetEntryDto,
+} from './api';
 import Index from './routes';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import StaffAdd from './routes/manage/staff/add';
@@ -153,9 +159,19 @@ const router = createBrowserRouter([
                   </Title>
                 ),
                 loader: async ({ request }) => {
-                  return fetch('/api/gigs/done', {
-                    signal: request.signal,
-                  });
+                  const gigsDone = (await (
+                    await fetch('/api/gigs/done', {
+                      signal: request.signal,
+                    })
+                  ).json()) as DoneGigDto[];
+
+                  const timesheetEntries = (await (
+                    await fetch('/api/timesheet-entries', {
+                      signal: request.signal,
+                    })
+                  ).json()) as TimesheetEntryDto[];
+
+                  return { gigsDone, timesheetEntries };
                 },
               },
             ],
@@ -292,7 +308,13 @@ const router = createBrowserRouter([
                     })
                   ).json()) as WorkerDto;
 
-                  return { worker, qualifications };
+                  const timesheetEntries = (await (
+                    await fetch(`/api/timesheet-entries/worker/${params.id!}`, {
+                      signal: request.signal,
+                    })
+                  ).json()) as TimesheetEntryDto[];
+
+                  return { worker, qualifications, timesheetEntries };
                 },
               },
             ],

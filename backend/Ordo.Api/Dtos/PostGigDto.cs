@@ -11,4 +11,5 @@ public readonly record struct PostGigDto
 
     [Range(1, int.MaxValue)]
     public int MaxWorkers { get; init; }
+    public string Description { get; init; }
 }

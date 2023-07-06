@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { MdAdd, MdArrowBack, MdDeleteForever, MdSave } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import createApi, {
@@ -8,7 +8,7 @@ import createApi, {
   WorkerDto,
   EditGigDto,
 } from '../../api';
-import { addDays, addHours, format, setHours, setMinutes } from 'date-fns';
+import { addDays, format, setSeconds } from 'date-fns';
 import Selector from './Selector';
 
 interface GigUpsertFormProps {
@@ -25,32 +25,39 @@ export default function GigUpsertForm({
   const isPostMode = gigToEdit == null;
   const navigate = useNavigate();
 
+  const now = setSeconds(new Date(), 0);
+
   const { postGig, editGig, deleteGig } = createApi();
 
   const [qualificationId, setQualificationId] = useState(
     gigToEdit?.qualification.id ?? qualifications[0].id
   );
 
-  const [startDateTime, setStartDateTime] = useState<Date>(
+  const [startDate, setStartDate] = useState<string>(
     gigToEdit != null
-      ? new Date(gigToEdit.start)
-      : addDays(setHours(setMinutes(new Date(), 0), 7), 1)
+      ? format(new Date(gigToEdit.start), 'yyyy-MM-dd')
+      : format(addDays(now, 1), 'yyyy-MM-dd')
   );
 
-  const [endDateTime, setEndDateTime] = useState<Date>(
-    gigToEdit != null
-      ? new Date(gigToEdit.end)
-      : addHours(new Date(startDateTime), 8)
+  const [startTime, setStartTime] = useState<string>(
+    gigToEdit != null ? format(new Date(gigToEdit.start), 'HH:mm') : '07:00'
+  );
+
+  const [endTime, setEndTime] = useState<string>(
+    gigToEdit != null ? format(new Date(gigToEdit.end), 'HH:mm') : '15:00'
   );
 
   const [address, setAddress] = useState(gigToEdit?.address ?? '');
   const [maxWorkers, setMaxWorkers] = useState(gigToEdit?.maxWorkers ?? 5);
+  const [description, setDescription] = useState(gigToEdit?.description ?? '');
 
   const [workerIdsSelected, setWorkerIdsSelected] = useState<string[]>(
     gigToEdit?.workerIds ?? []
   );
 
   const [errorMessage, setErrorMessage] = useState('');
+
+  const inputStartTimeRef = useRef<HTMLInputElement>(null);
 
   async function onDelete() {
     if (!gigToEdit) throw new Error();
@@ -67,11 +74,30 @@ export default function GigUpsertForm({
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
 
+    setErrorMessage('');
+
+    if (!inputStartTimeRef.current) throw new Error();
+
+    inputStartTimeRef.current.setCustomValidity('');
+
+    const start = new Date(`${startDate}T${startTime}`);
+
+    if (isPostMode && start < now) {
+      inputStartTimeRef.current.setCustomValidity(
+        'Tämä ei voi olla menneisyydessä.'
+      );
+      return;
+    }
+
+    const endTemp = new Date(`${startDate}T${endTime}`);
+    const end = endTemp < start ? addDays(endTemp, 1) : endTemp;
+
     const newGig = {
-      start: new Date(startDateTime).toISOString(),
-      end: new Date(endDateTime).toISOString(),
+      start: start.toISOString(),
+      end: end.toISOString(),
       address,
       maxWorkers,
+      description,
     };
 
     const result =
@@ -127,34 +153,44 @@ export default function GigUpsertForm({
           ))}
         </select>
 
-        <label htmlFor="input-start">Alkaa</label>
+        <label htmlFor="input-date">Päivämäärä</label>
         <input
-          id="input-start"
-          type="datetime-local"
+          id="input-date"
+          type="date"
           required
           className="mb-2"
-          value={format(startDateTime, "yyyy-MM-dd'T'HH:mm")}
+          value={startDate}
+          min={isPostMode ? format(now, 'yyyy-MM-dd') : undefined}
           onChange={(e) =>
-            e.target.validity.valid &&
-            setStartDateTime(new Date(e.target.value))
+            e.target.validity.valid && setStartDate(e.target.value)
           }
-          min={isPostMode ? new Date().toISOString().slice(0, -8) : undefined}
         />
 
-        <label htmlFor="input-end">Päättyy</label>
-        <input
-          id="input-end"
-          type="datetime-local"
-          required
-          className="mb-2"
-          value={format(endDateTime, "yyyy-MM-dd'T'HH:mm")}
-          onChange={(e) =>
-            e.target.validity.valid && setEndDateTime(new Date(e.target.value))
-          }
-          min={
-            isPostMode ? format(startDateTime, "yyyy-MM-dd'T'HH:mm") : undefined
-          }
-        />
+        <label htmlFor="input-start-time">Aika</label>
+        <div className="flex">
+          <input
+            ref={inputStartTimeRef}
+            id="input-start-time"
+            type="time"
+            required
+            className="mb-2 max-w-[6rem]"
+            value={startTime}
+            onChange={(e) =>
+              e.target.validity.valid && setStartTime(e.target.value)
+            }
+          />
+          <span className="mx-1">&mdash;</span>
+          <input
+            id="input-end"
+            type="time"
+            required
+            className="mb-2 max-w-[6rem]"
+            value={endTime}
+            onChange={(e) =>
+              e.target.validity.valid && setEndTime(e.target.value)
+            }
+          />
+        </div>
 
         <label htmlFor="input-address">Osoite</label>
         <input
@@ -200,6 +236,15 @@ export default function GigUpsertForm({
             onChange={(newIds) => setWorkerIdsSelected(newIds)}
           />
         )}
+
+        <label htmlFor="input-notes">Kuvaus</label>
+        <textarea
+          id="input-notes"
+          className="mb-2 w-full"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          rows={4}
+        />
 
         <div className="mt-2 flex flex-col items-start ">
           <button type="submit" className="btn-primary">

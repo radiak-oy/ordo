@@ -15,7 +15,11 @@ textarea {
 }
 
 .btn-primary {
-  @apply p-2 flex justify-center items-center rounded border font-bold text-white bg-primary-500 hover:bg-primary-600 transition;
+  @apply p-2 flex justify-center items-center rounded border font-medium text-white bg-primary-500 hover:bg-primary-600 transition;
+}
+
+.btn-primary:disabled {
+  @apply bg-secondary-500
 }
 
 .btn-primary-outline {

@@ -9,4 +9,5 @@ public class Gig
     public string Address { get; set; } = null!;
     public int MaxWorkers { get; set; }
     public List<string> WorkerIds { get; set; } = null!;
+    public string Description { get; set; } = null!;
 }

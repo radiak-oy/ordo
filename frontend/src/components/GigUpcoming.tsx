@@ -1,6 +1,6 @@
-import { format } from 'date-fns';
 import { UpcomingGigDto } from '../api';
 import { MdPersonAdd, MdPersonRemove } from 'react-icons/md';
+import GigInfo from './GigInfo';
 
 interface GigUpcomingProps {
   className: string;
@@ -19,13 +19,7 @@ export default function GigUpcoming({
     <div
       className={`${className} p-2 flex flex-col items-start rounded border-2 border-secondary-300 hover:border-secondary-400`}
     >
-      <span>{gig.qualification}</span>
-      <span>{new Date(gig.start).toLocaleDateString()}</span>
-      <span>
-        {format(new Date(gig.start), 'HH:mm')}
-        &ndash;{format(new Date(gig.end), 'HH:mm')}
-      </span>
-      <span className="mb-2">{gig.address}</span>
+      <GigInfo className="mb-2" gig={gig} />
       {gig.isSignedUp ? (
         <button
           type="button"

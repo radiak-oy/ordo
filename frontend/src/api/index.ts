@@ -13,7 +13,17 @@ export type UpcomingGigDto = components['schemas']['UpcomingGigDto'];
 export type GigDto = components['schemas']['GigDto'];
 export type PostGigDto = components['schemas']['PostGigDto'];
 export type EditGigDto = components['schemas']['EditGigDto'];
+
+export type TimesheetEntryDto = components['schemas']['TimesheetEntryDto'];
+export type AddTimesheetEntryDto =
+  components['schemas']['AddTimesheetEntryDto'];
+export type EditTimesheetEntryDto =
+  components['schemas']['EditTimesheetEntryDto'];
+export type ConfirmTimesheetEntryDto =
+  components['schemas']['ConfirmTimesheetEntryDto'];
+
 export type QualificationDto = components['schemas']['QualificationDto'];
+
 export type AddWorkerDto = components['schemas']['AddWorkerDto'];
 export type WorkerDto = components['schemas']['WorkerDto'];
 export type EditWorkerDto = components['schemas']['EditWorkerDto'];
@@ -90,9 +100,9 @@ export default function createApi() {
     logout: (): Promise<Result> => requestApi('POST', '/api/logout'),
 
     signUp: (id: string): Promise<Result> =>
-      requestApi('POST', `/api/gigs/${id}/signup`),
+      requestApi('POST', `/api/gigs/${id}/workers`),
     cancelSignUp: (id: string): Promise<Result> =>
-      requestApi('POST', `/api/gigs/${id}/signup-cancel`),
+      requestApi('DELETE', `/api/gigs/${id}/workers`),
 
     postGig: (dto: PostGigDto): Promise<Result<GigDto>> =>
       requestApi('POST', '/api/gigs', dto),
@@ -100,6 +110,17 @@ export default function createApi() {
       requestApi('PUT', `/api/gigs/${id}`, dto),
     deleteGig: (id: string): Promise<Result> =>
       requestApi('DELETE', `/api/gigs/${id}`),
+
+    addTimesheetEntry: (
+      dto: AddTimesheetEntryDto
+    ): Promise<Result<TimesheetEntryDto>> =>
+      requestApi('POST', '/api/timesheet-entries', dto),
+    editTimesheetEntry: (
+      dto: EditTimesheetEntryDto
+    ): Promise<Result<TimesheetEntryDto>> =>
+      requestApi('PUT', '/api/timesheet-entries', dto),
+    confirmTimesheetEntry: (dto: ConfirmTimesheetEntryDto): Promise<Result> =>
+      requestApi('POST', '/api/timesheet-entries/confirmed', dto),
 
     addWorker: (dto: AddWorkerDto) => requestApi('POST', '/api/workers', dto),
     editWorker: (

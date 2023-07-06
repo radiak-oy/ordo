@@ -5,8 +5,7 @@ import createApi, {
   WorkerDto,
   QualificationDto,
 } from '../../api';
-import { MdAdd, MdArrowBack, MdSave } from 'react-icons/md';
-import { useNavigate } from 'react-router-dom';
+import { MdAdd, MdSave } from 'react-icons/md';
 import Selector from './Selector';
 
 interface WorkerUpsertFormProps {
@@ -19,7 +18,6 @@ export default function WorkerUpsertForm({
   workerToEdit,
 }: WorkerUpsertFormProps) {
   const isCreateMode = workerToEdit == null;
-  const navigate = useNavigate();
   const { addWorker, editWorker } = createApi();
 
   const [email, setEmail] = useState('');
@@ -56,105 +54,92 @@ export default function WorkerUpsertForm({
 
     if (!result.ok) {
       setErrorMessage(result.errorMessage);
-      return;
     }
-
-    navigate(-1);
   }
 
   return (
-    <>
-      <button
-        type="button"
-        className="mb-4 btn-secondary"
-        onClick={() => navigate(-1)}
-      >
-        <MdArrowBack className="mr-1" />
-        Takaisin
+    <form
+      className="p-4 flex flex-col items-start rounded border"
+      onSubmit={onSubmit}
+    >
+      <span className="mb-2 text-lg font-semibold">
+        {isCreateMode ? 'Lisää henkilö' : `Muokkaa henkilöä ${name}`}
+      </span>
+
+      {isCreateMode && (
+        <>
+          <label htmlFor="input-email">Sähköpostiosoite</label>
+          <input
+            id="input-email"
+            type="email"
+            required
+            className=""
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <span className="mt-1 mb-2 text-secondary-700">
+            Varmista sähköpostiosoitteen oikeinkirjoitus.
+          </span>
+        </>
+      )}
+
+      <label htmlFor="input-name">Nimi</label>
+      <input
+        id="input-name"
+        type="text"
+        required
+        className="mb-2"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
+
+      <Selector
+        title="Pätevyydet"
+        noneTitle="Ei pätevyyksiä."
+        addTitle="Lisää pätevyys"
+        options={qualifications}
+        selectedIds={qualificationIdsSelected}
+        onChange={(newIds) => setQualificationIdsSelected(newIds)}
+      />
+
+      <label htmlFor="input-notes">Muistiinpanot</label>
+      <textarea
+        id="input-notes"
+        className="mb-2 w-full"
+        value={notes}
+        onChange={(e) => setNotes(e.target.value)}
+      />
+
+      {isCreateMode && (
+        <>
+          <span className="mb-1 text-secondary-700">
+            Kun lisäät henkilön, hän saa linkin sähköpostiosoitteeseensa, jonka
+            kautta hän voi luoda itselleen salasanan.
+          </span>
+          <span className="text-secondary-700">
+            Jatkossa hän voi kirjautua tällä salasanalla (tai Googlen kautta,
+            jos sähköpostiosoite on Google-tilin osoite).
+          </span>
+        </>
+      )}
+
+      <button type="submit" className="mt-2 btn-primary" disabled={isLoading}>
+        {isCreateMode ? (
+          <>
+            <MdAdd className="mr-1" />
+            <span className="pr-2">Lisää</span>
+          </>
+        ) : (
+          <>
+            <MdSave className="mr-1" />
+            <span className="px-1">Tallenna</span>
+          </>
+        )}
       </button>
-      <form
-        className="p-4 flex flex-col items-start rounded border"
-        onSubmit={onSubmit}
-      >
-        <span className="mb-2 text-lg font-semibold">
-          {isCreateMode ? 'Lisää henkilö' : `Muokkaa henkilöä ${name}`}
-        </span>
 
-        {isCreateMode && (
-          <>
-            <label htmlFor="input-email">Sähköpostiosoite</label>
-            <input
-              id="input-email"
-              type="email"
-              required
-              className=""
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <span className="mt-1 mb-2 text-secondary-700">
-              Varmista sähköpostiosoitteen oikeinkirjoitus.
-            </span>
-          </>
-        )}
-
-        <label htmlFor="input-name">Nimi</label>
-        <input
-          id="input-name"
-          type="text"
-          required
-          className="mb-2"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-
-        <Selector
-          title="Pätevyydet"
-          noneTitle="Ei pätevyyksiä."
-          addTitle="Lisää pätevyys"
-          options={qualifications}
-          selectedIds={qualificationIdsSelected}
-          onChange={(newIds) => setQualificationIdsSelected(newIds)}
-        />
-
-        <label htmlFor="input-notes">Muistiinpanot</label>
-        <textarea
-          id="input-notes"
-          className="mb-2 w-full"
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-        />
-
-        {isCreateMode && (
-          <>
-            <span className="mb-1 text-secondary-700">
-              Kun lisäät henkilön, hän saa linkin sähköpostiosoitteeseensa,
-              jonka kautta hän voi luoda itselleen salasanan.
-            </span>
-            <span className="text-secondary-700">
-              Jatkossa hän voi kirjautua tällä salasanalla (tai Googlen kautta,
-              jos sähköpostiosoite on Google-tilin osoite).
-            </span>
-          </>
-        )}
-
-        <button type="submit" className="mt-2 btn-primary" disabled={isLoading}>
-          {isCreateMode ? (
-            <>
-              <MdAdd className="mr-1" />
-              <span className="pr-2">Lisää</span>
-            </>
-          ) : (
-            <>
-              <MdSave className="mr-1" />
-              <span className="px-1">Tallenna</span>
-            </>
-          )}
-        </button>
-
-        {errorMessage.length > 0 && (
-          <span className="mt-2 text-red-500">{errorMessage}</span>
-        )}
-      </form>
-    </>
+      {errorMessage.length > 0 && (
+        <span className="mt-2 text-red-500">{errorMessage}</span>
+      )}
+    </form>
   );
 }

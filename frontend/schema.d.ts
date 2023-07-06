@@ -16,7 +16,7 @@ export interface paths {
       parameters: {
         query?: {
           role?: string;
-          username?: string;
+          email?: string;
           password?: string;
         };
       };
@@ -137,7 +137,7 @@ export interface paths {
       };
     };
   };
-  "/gigs/{id}/signup": {
+  "/gigs/{id}/workers": {
     post: {
       parameters: {
         path: {
@@ -149,9 +149,7 @@ export interface paths {
         200: never;
       };
     };
-  };
-  "/gigs/{id}/signup-cancel": {
-    post: {
+    delete: {
       parameters: {
         path: {
           id: string;
@@ -346,6 +344,92 @@ export interface paths {
       };
     };
   };
+  "/timesheet-entries": {
+    get: {
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "text/plain": (components["schemas"]["TimesheetEntryDto"])[];
+            "application/json": (components["schemas"]["TimesheetEntryDto"])[];
+            "text/json": (components["schemas"]["TimesheetEntryDto"])[];
+          };
+        };
+      };
+    };
+    put: {
+      requestBody?: {
+        content: {
+          "application/json": components["schemas"]["EditTimesheetEntryDto"];
+          "text/json": components["schemas"]["EditTimesheetEntryDto"];
+          "application/*+json": components["schemas"]["EditTimesheetEntryDto"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "text/plain": components["schemas"]["TimesheetEntryDto"];
+            "application/json": components["schemas"]["TimesheetEntryDto"];
+            "text/json": components["schemas"]["TimesheetEntryDto"];
+          };
+        };
+      };
+    };
+    post: {
+      requestBody?: {
+        content: {
+          "application/json": components["schemas"]["AddTimesheetEntryDto"];
+          "text/json": components["schemas"]["AddTimesheetEntryDto"];
+          "application/*+json": components["schemas"]["AddTimesheetEntryDto"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "text/plain": components["schemas"]["TimesheetEntryDto"];
+            "application/json": components["schemas"]["TimesheetEntryDto"];
+            "text/json": components["schemas"]["TimesheetEntryDto"];
+          };
+        };
+      };
+    };
+  };
+  "/timesheet-entries/worker/{workerId}": {
+    get: {
+      parameters: {
+        path: {
+          workerId: string;
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: {
+          content: {
+            "text/plain": (components["schemas"]["TimesheetEntryDto"])[];
+            "application/json": (components["schemas"]["TimesheetEntryDto"])[];
+            "text/json": (components["schemas"]["TimesheetEntryDto"])[];
+          };
+        };
+      };
+    };
+  };
+  "/timesheet-entries/confirmed": {
+    post: {
+      requestBody?: {
+        content: {
+          "application/json": components["schemas"]["ConfirmTimesheetEntryDto"];
+          "text/json": components["schemas"]["ConfirmTimesheetEntryDto"];
+          "application/*+json": components["schemas"]["ConfirmTimesheetEntryDto"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: never;
+      };
+    };
+  };
   "/workers": {
     get: {
       responses: {
@@ -428,11 +512,26 @@ export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
+    AddTimesheetEntryDto: {
+      gigId: string;
+      /** Format: date-time */
+      clockIn: string;
+      /** Format: date-time */
+      clockOut?: string | null;
+    };
     AddWorkerDto: {
       email: string;
       name: string;
       qualificationIds: (string)[];
       notes: string;
+    };
+    ConfirmTimesheetEntryDto: {
+      workerId: string;
+      gigId: string;
+      /** Format: date-time */
+      clockIn: string;
+      /** Format: date-time */
+      clockOut: string;
     };
     DoneGigDto: {
       /** Format: uuid */
@@ -443,6 +542,7 @@ export interface components {
       /** Format: date-time */
       end: string;
       address: string;
+      description: string;
     };
     EditGigDto: {
       /** Format: date-time */
@@ -453,6 +553,14 @@ export interface components {
       /** Format: int32 */
       maxWorkers: number;
       workerIds: (string)[];
+      description: string;
+    };
+    EditTimesheetEntryDto: {
+      gigId: string;
+      /** Format: date-time */
+      clockIn: string;
+      /** Format: date-time */
+      clockOut?: string | null;
     };
     EditWorkerDto: {
       name: string;
@@ -471,6 +579,7 @@ export interface components {
       /** Format: int32 */
       maxWorkers: number;
       workerIds: (string)[];
+      description: string;
     };
     LoginDto: {
       email: string;
@@ -492,6 +601,7 @@ export interface components {
       address: string;
       /** Format: int32 */
       maxWorkers: number;
+      description: string;
     };
     QualificationDto: {
       id: string;
@@ -505,6 +615,15 @@ export interface components {
       token: string;
       newPassword: string;
     };
+    TimesheetEntryDto: {
+      workerId: string;
+      gigId: string;
+      /** Format: date-time */
+      clockIn: string;
+      /** Format: date-time */
+      clockOut?: string | null;
+      isConfirmed: boolean;
+    };
     UpcomingGigDto: {
       /** Format: uuid */
       id: string;
@@ -515,6 +634,7 @@ export interface components {
       end: string;
       address: string;
       isSignedUp: boolean;
+      description: string;
     };
     UserDto: {
       id: string;

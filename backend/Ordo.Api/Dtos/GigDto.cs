@@ -11,6 +11,7 @@ public readonly record struct GigDto
     public string Address { get; init; }
     public int MaxWorkers { get; init; }
     public string[] WorkerIds { get; init; }
+    public string Description { get; init; }
 
     public static GigDto FromModel(Gig gig) => new GigDto
     {
@@ -21,5 +22,6 @@ public readonly record struct GigDto
         Address = gig.Address,
         MaxWorkers = gig.MaxWorkers,
         WorkerIds = gig.WorkerIds.ToArray(),
+        Description = gig.Description
     };
 }

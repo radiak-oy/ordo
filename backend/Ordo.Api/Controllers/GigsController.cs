@@ -41,21 +41,12 @@ public class GigsController : ControllerBase
         var gigsDone = await _db.Gigs
             .AsNoTracking()
             .Include(g => g.Qualification)
-            .OrderBy(g => g.Start)
+            .OrderByDescending(g => g.Start)
             .Where(g => g.WorkerIds.Contains(worker.Id))
-            .Where(g => g.End < DateTimeOffset.UtcNow)
+            .Where(g => g.Start <= DateTimeOffset.UtcNow)
             .ToListAsync();
 
-        var dtos = gigsDone.Select(g => new DoneGigDto
-        {
-            Id = g.Id,
-            Qualification = g.Qualification.Name,
-            Start = g.Start,
-            End = g.End,
-            Address = g.Address,
-        });
-
-        return Ok(dtos);
+        return Ok(gigsDone.Select(DoneGigDto.FromModel));
     }
 
     [HttpGet("upcoming")]
@@ -75,24 +66,14 @@ public class GigsController : ControllerBase
             .AsNoTracking()
             .Include(g => g.Qualification)
             .OrderBy(g => g.Start)
-            .Where(g => DateTimeOffset.UtcNow <= g.End)
+            .Where(g => DateTimeOffset.UtcNow < g.Start)
             .Where(g => worker.Qualifications.Contains(g.Qualification))
             .ToListAsync();
 
-        var dtos = gigsUpcoming.Select(g => new UpcomingGigDto
-        {
-            Id = g.Id,
-            Qualification = g.Qualification.Name,
-            Start = g.Start,
-            End = g.End,
-            Address = g.Address,
-            IsSignedUp = g.WorkerIds.Contains(worker.Id)
-        });
-
-        return Ok(dtos);
+        return Ok(gigsUpcoming.Select(g => UpcomingGigDto.FromModel(g, isSignedUp: g.WorkerIds.Contains(worker.Id))));
     }
 
-    [HttpPost("{id}/signup")]
+    [HttpPost("{id}/workers")]
     public async Task<ActionResult> SignUp(Guid id)
     {
         var gig = await _db.Gigs
@@ -127,7 +108,7 @@ public class GigsController : ControllerBase
         return NoContent();
     }
 
-    [HttpPost("{id}/signup-cancel")]
+    [HttpDelete("{id}/workers")]
     public async Task<ActionResult> CancelSignUp(Guid id)
     {
         var gig = await _db.Gigs
@@ -199,7 +180,12 @@ public class GigsController : ControllerBase
 
         if (dto.End <= dto.Start)
         {
-            return BadRequest("End must be after Start.");
+            return UnprocessableEntity("End must be after Start.");
+        }
+
+        if ((dto.End - dto.Start).TotalHours >= 18)
+        {
+            return UnprocessableEntity("The gig can't last over 18 hours.");
         }
 
         var gig = new Gig()
@@ -207,9 +193,10 @@ public class GigsController : ControllerBase
             Qualification = qualification,
             Start = dto.Start.ToUniversalTime(),
             End = dto.End.ToUniversalTime(),
-            Address = dto.Address,
+            Address = dto.Address.Trim(),
             MaxWorkers = dto.MaxWorkers,
-            WorkerIds = new List<string>()
+            WorkerIds = new List<string>(),
+            Description = dto.Description.Trim(),
         };
 
         await _db.Gigs.AddAsync(gig);
@@ -233,20 +220,27 @@ public class GigsController : ControllerBase
 
         if (dto.End <= dto.Start)
         {
-            return BadRequest("End must be after Start.");
+            return UnprocessableEntity("End must be after Start.");
         }
+
         if (dto.WorkerIds.Length > dto.MaxWorkers)
         {
-            return BadRequest("Max workers must be greater or equal to the amount of workers.");
+            return UnprocessableEntity("Max workers must be greater or equal to the amount of workers.");
+        }
+
+        if ((dto.End - dto.Start).TotalHours >= 18)
+        {
+            return UnprocessableEntity("The gig can't last over 18 hours.");
         }
 
         // TODO: check qualifications etc.
 
         gig.Start = dto.Start;
         gig.End = dto.End;
-        gig.Address = dto.Address;
+        gig.Address = dto.Address.Trim();
         gig.MaxWorkers = dto.MaxWorkers;
         gig.WorkerIds = dto.WorkerIds.ToList();
+        gig.Description = dto.Description.Trim();
 
         await _db.SaveChangesAsync();
 

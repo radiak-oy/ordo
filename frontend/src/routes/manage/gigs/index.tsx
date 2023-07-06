@@ -15,7 +15,10 @@ export default function Index() {
   const now = new Date();
 
   const gigsPast = useMemo(
-    () => gigs.filter((g) => new Date(g.end) < now),
+    () =>
+      gigs
+        .filter((g) => new Date(g.end) < now)
+        .sort((a, b) => (a.start > b.start ? -1 : 1)),
     [now, gigs]
   );
 
@@ -57,7 +60,9 @@ export default function Index() {
             className="flex justify-between items-center rounded hover:bg-secondary-100"
             onClick={() => setShowPastGigs((old) => !old)}
           >
-            <span className="mb-1 font-semibold">Menneet</span>
+            <span className="mb-1 font-semibold">
+              Menneet ({gigsPast.length})
+            </span>
             <MdKeyboardArrowDown
               className={`mr-1 ${showPastGigs ? 'rotate-180' : 'rotate-0'}`}
             />
