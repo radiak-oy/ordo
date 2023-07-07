@@ -75,8 +75,8 @@ public class HomeController : ControllerBase
         {
             ClientSecrets = new()
             {
-                ClientId = _configuration["Authentication:Google:ClientId"],
-                ClientSecret = _configuration["Authentication:Google:ClientSecret"],
+                ClientId = _configuration["Google:ClientId"],
+                ClientSecret = _configuration["Google:ClientSecret"],
             },
         });
 
