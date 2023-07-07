@@ -20,23 +20,20 @@ export default function Index() {
       {workers.map((x) => (
         <div
           key={x.id}
-          className="mb-4 p-2 w-full flex rounded cursor-pointer border-2 border-secondary-300 hover:border-secondary-400"
+          className="mb-4 p-2 w-full flex flex-col rounded cursor-pointer border-2 border-secondary-300 hover:border-secondary-400"
           onClick={() => navigate(x.id)}
         >
-          <div className="w-2/3 flex flex-col">
-            <span className="mb-2">{x.name}</span>
-            <div className="flex flex-wrap">
-              {x.qualifications.map((q) => (
-                <span
-                  key={q.id}
-                  className="mr-1 mb-1 px-2 rounded font-medium text-white bg-primary-500"
-                >
-                  {q.name}
-                </span>
-              ))}
-            </div>
+          <span className="mb-2">{x.name}</span>
+          <div className="flex flex-wrap">
+            {x.qualifications.map((q) => (
+              <span
+                key={q.id}
+                className="mr-1 mb-1 px-2 rounded font-medium text-white bg-primary-500"
+              >
+                {q.name}
+              </span>
+            ))}
           </div>
-          <div className="grow"></div>
         </div>
       ))}
     </div>
