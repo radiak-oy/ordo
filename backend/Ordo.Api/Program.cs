@@ -5,10 +5,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Npgsql;
+using Ordo.Api.Mail;
+using Ordo.Api.Messaging;
 using Ordo.Api.OpenApi;
 using Ordo.Api.Options;
 using Ordo.Api.Security;
-using Ordo.Api.Services;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -81,7 +82,9 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 builder.Services.Configure<MailOptions>(builder.Configuration.GetSection(MailOptions.Mail));
-builder.Services.AddTransient<IMailService, MailService>();
+builder.Services.AddSingleton<IMailService, MailService>();
+
+builder.Services.AddSingleton<IMessagingService, MessagingService>();
 
 var app = builder.Build();
 

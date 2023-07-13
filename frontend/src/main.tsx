@@ -34,6 +34,7 @@ import ResetPassword from './routes/reset-password';
 import ForgotPassword from './routes/forgot-password';
 import Settings from './routes/settings';
 import ManageSettings from './routes/manage/settings';
+import './firebase.ts';
 
 function getCookieValueURIDecodedByName(name: string): string | null {
   const value =

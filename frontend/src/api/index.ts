@@ -8,6 +8,9 @@ type LoginGoogleDto = components['schemas']['LoginGoogleDto'];
 type RequestResetPasswordDto = components['schemas']['RequestResetPasswordDto'];
 type ResetPasswordDto = components['schemas']['ResetPasswordDto'];
 
+type SubscribeToTopicDto = components['schemas']['SubscribeToTopicDto'];
+type UnsubscribeFromTopicDto = components['schemas']['UnsubscribeFromTopicDto'];
+
 export type DoneGigDto = components['schemas']['DoneGigDto'];
 export type UpcomingGigDto = components['schemas']['UpcomingGigDto'];
 export type GigDto = components['schemas']['GigDto'];
@@ -103,6 +106,17 @@ export default function createApi() {
       requestApi('POST', `/api/gigs/${id}/workers`),
     cancelSignUp: (id: string): Promise<Result> =>
       requestApi('DELETE', `/api/gigs/${id}/workers`),
+
+    subscribeToTopic: (topic: string, token: string): Promise<Result> =>
+      requestApi('POST', '/api/messages/subscribers', {
+        topic,
+        token,
+      } as SubscribeToTopicDto),
+    unsubscribeFromTopic: (topic: string, token: string): Promise<Result> =>
+      requestApi('DELETE', '/api/messages/subscribers', {
+        topic,
+        token,
+      } as UnsubscribeFromTopicDto),
 
     postGig: (dto: PostGigDto): Promise<Result<GigDto>> =>
       requestApi('POST', '/api/gigs', dto),

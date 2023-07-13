@@ -330,6 +330,34 @@ export interface paths {
       };
     };
   };
+  "/messages/subscribers": {
+    post: {
+      requestBody?: {
+        content: {
+          "application/json": components["schemas"]["SubscribeToTopicDto"];
+          "text/json": components["schemas"]["SubscribeToTopicDto"];
+          "application/*+json": components["schemas"]["SubscribeToTopicDto"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: never;
+      };
+    };
+    delete: {
+      requestBody?: {
+        content: {
+          "application/json": components["schemas"]["UnsubscribeFromTopicDto"];
+          "text/json": components["schemas"]["UnsubscribeFromTopicDto"];
+          "application/*+json": components["schemas"]["UnsubscribeFromTopicDto"];
+        };
+      };
+      responses: {
+        /** @description Success */
+        200: never;
+      };
+    };
+  };
   "/qualifications": {
     get: {
       responses: {
@@ -517,7 +545,7 @@ export interface components {
       /** Format: date-time */
       clockIn: string;
       /** Format: date-time */
-      clockOut?: string | null;
+      clockOut: string;
     };
     AddWorkerDto: {
       email: string;
@@ -560,7 +588,7 @@ export interface components {
       /** Format: date-time */
       clockIn: string;
       /** Format: date-time */
-      clockOut?: string | null;
+      clockOut: string;
     };
     EditWorkerDto: {
       name: string;
@@ -615,14 +643,22 @@ export interface components {
       token: string;
       newPassword: string;
     };
+    SubscribeToTopicDto: {
+      token: string;
+      topic: string;
+    };
     TimesheetEntryDto: {
       workerId: string;
       gigId: string;
       /** Format: date-time */
       clockIn: string;
       /** Format: date-time */
-      clockOut?: string | null;
+      clockOut: string;
       isConfirmed: boolean;
+    };
+    UnsubscribeFromTopicDto: {
+      token: string;
+      topic: string;
     };
     UpcomingGigDto: {
       /** Format: uuid */

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Ordo.Api.Dtos;
+using Ordo.Api.Messaging;
 using Ordo.Api.Models;
 using Ordo.Api.Security;
 
@@ -15,14 +16,16 @@ public class GigsController : ControllerBase
 {
     private readonly ApplicationDbContext _db;
     private readonly IAuthorizationService _authz;
+    private readonly IMessagingService _messaging;
 
     private string UserId => User.FindFirstValue(ClaimTypes.NameIdentifier) ??
         throw new InvalidOperationException("User ID is missing");
 
-    public GigsController(ApplicationDbContext db, IAuthorizationService authz)
+    public GigsController(ApplicationDbContext db, IAuthorizationService authz, IMessagingService messaging)
     {
         _db = db;
         _authz = authz;
+        _messaging = messaging;
     }
 
     [HttpGet("done")]
@@ -201,6 +204,11 @@ public class GigsController : ControllerBase
 
         await _db.Gigs.AddAsync(gig);
         await _db.SaveChangesAsync();
+
+        await _messaging.SendMessageToTopicAsync(
+            MessageTopics.Gigs,
+            "Uusi keikka",
+            $"{gig.Qualification.Name}, {gig.Start.ToString()}-{gig.End.ToString()}, {gig.Address}");
 
         return Ok(GigDto.FromModel(gig));
     }
