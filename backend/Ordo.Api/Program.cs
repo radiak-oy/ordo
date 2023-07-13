@@ -8,7 +8,7 @@ using Npgsql;
 using Ordo.Api.OpenApi;
 using Ordo.Api.Options;
 using Ordo.Api.Security;
-using Ordo.Api.Services;
+using Ordo.Api.Mail;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 var builder = WebApplication.CreateBuilder(args);

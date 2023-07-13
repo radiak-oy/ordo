@@ -7,7 +7,6 @@ using Ordo.Api.Dtos;
 using Ordo.Api.Mail;
 using Ordo.Api.Models;
 using Ordo.Api.Security;
-using Ordo.Api.Services;
 
 namespace Ordo.Api.Controllers;
 

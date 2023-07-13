@@ -5,12 +5,9 @@ using Google.Apis.Auth.OAuth2.Flows;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Ordo.Api.Dtos;
 using Ordo.Api.Mail;
-using Ordo.Api.Models;
 using Ordo.Api.Security;
-using Ordo.Api.Services;
 
 namespace Ordo.Api.Controllers;
 

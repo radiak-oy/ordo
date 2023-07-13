@@ -1,6 +1,4 @@
-using Ordo.Api.Mail;
-
-namespace Ordo.Api.Services;
+namespace Ordo.Api.Mail;
 
 public interface IMailService
 {

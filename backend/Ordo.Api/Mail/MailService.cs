@@ -1,11 +1,10 @@
 using MimeKit;
 using MailKit.Net.Smtp;
 using MailKit.Security;
-using Ordo.Api.Mail;
 using Ordo.Api.Options;
 using Microsoft.Extensions.Options;
 
-namespace Ordo.Api.Services;
+namespace Ordo.Api.Mail;
 
 public class MailService : IMailService
 {
