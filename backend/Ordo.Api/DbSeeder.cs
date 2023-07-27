@@ -46,8 +46,8 @@ public class DbSeeder : IHostedService
 
         if (isDevelopment)
         {
-            string emailRobert = "robert.dahlstrom@stafftime.fi";
-            string emailAaro = "aarojkarell@gmail.com";
+            string emailRobert = "robert@testi.fi";
+            string emailAaro = "aaro@testi.fi";
             string emailMatti = "matti@testi.fi";
 
             if (!userManager.Users.Any())
