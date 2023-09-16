@@ -10,7 +10,7 @@ If an user's email is linked to a valid Google account, they can sign in with Go
 
 The project is implemented using **React, ASP.NET Core** (with **EF Core**) and **Postgresql**. It can be installed as a PWA, which is especially convenient for Android users wanting to log in through Google.
 
-_Due to various reasons regarding the original client, development of the project has halted. However, the project is still being hosted and can be found [here](https://ordo.radiak.fi/)._
+_Due to various reasons regarding the original client, development of the project has halted._
 
 ## Development
 
@@ -19,31 +19,43 @@ _Due to various reasons regarding the original client, development of the projec
 ```
 git clone https://github.com/radiak-oy/ordo.git
 ```
+
 ```
 cd ordo
 ```
+
 #### Frontend
+
 ```
 cd frontend
 ```
+
 ```
 npm i
 ```
+
 ```
 npm run dev
 ```
+
 #### Backend
-* First, in one console window, start the Postgres instance
+
+- First, in one console window, start the Postgres instance
+
 ```
 cd backend
 ```
+
 ```
 docker compose up
 ```
-* Then, in another console window, run the API
+
+- Then, in another console window, run the API
+
 ```
 cd backend/Ordo.Api/
 ```
+
 ```
 dotnet run
 ```
